@@ -1,0 +1,26 @@
+[
+  {
+    "filename": "附件1_精简代码复现包(1).zip",
+    "sha256": "d4b25be0d04a95529902c4c2f74c8fbeea1ddddc6d3bed083cb00390a718e30a",
+    "files": 710,
+    "uncompressed_bytes": 8350068
+  },
+  {
+    "filename": "附件2_中文图与主实验数据(1).zip",
+    "sha256": "f8a054e206bdcaa4d066a13e2a5bd05b4ffa23d2c26ec4cdf1a578ecee1ed0f4",
+    "files": 864,
+    "uncompressed_bytes": 19482993
+  },
+  {
+    "filename": "附件3_主实验与专项回归证据(1).zip",
+    "sha256": "012a838a3fe6f0283123f3b71de5f316bc1da3555c182e2d41fc6372e4eec8ad",
+    "files": 55,
+    "uncompressed_bytes": 18573120
+  },
+  {
+    "filename": "LaZer_正常路径优化_最终代码包_20261019(2).zip",
+    "sha256": "6213fd94141a8c5319502067bc9ce3bd238447df17f49a1b83ce443e5b47e54c",
+    "files": 4029,
+    "uncompressed_bytes": 222295842
+  }
+]

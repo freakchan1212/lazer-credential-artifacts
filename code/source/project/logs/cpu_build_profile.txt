@@ -1,0 +1,4 @@
+profile=AVX2_AES_FMA_NO_AVX512
+compiler_suffix=-march=x86-64 -mtune=generic -mavx2 -maes -mfma -mno-avx512f
+parameters=variant_specific; see ACTIVE_VARIANT.json and PATCHES.json
+performance_comparison=compare experiments using this same build profile

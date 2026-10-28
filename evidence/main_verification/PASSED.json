@@ -1,0 +1,19 @@
+{
+  "status": "PASSED",
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "fixed_identity": [
+    "B1",
+    "G3"
+  ],
+  "forced_generic_identity": [
+    "G3",
+    "C3"
+  ],
+  "cross_verification": "all B1/G3 proofs into both verifiers; strict",
+  "range_guard_cases_each": 1009,
+  "scope": "finite regression; not full security proof"
+}

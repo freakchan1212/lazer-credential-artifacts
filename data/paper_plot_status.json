@@ -1,0 +1,10 @@
+{
+  "languages": [
+    {
+      "lang": "zh",
+      "status": "COMPLETE",
+      "figures": 5
+    }
+  ],
+  "ignored_invalid_fonts": []
+}

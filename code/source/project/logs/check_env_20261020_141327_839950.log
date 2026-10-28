@@ -1,0 +1,21 @@
+Log: /home/jolson/下载/LZ_E4_REVIEW_SMOKE/LaZer_E4_Supplement/project/logs/check_env_20261020_141327_839950.log
+=== Host and compiler ===
+Linux joson 6.8.0-138-generic #138~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Aug  7 13:43:15 UTC  x86_64 x86_64 x86_64 GNU/Linux
+/usr/bin/gcc
+gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+/usr/bin/g++
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+/usr/bin/make
+GNU Make 4.3
+/usr/bin/unzip
+UnZip 6.00 of 20 April 2009, by Debian. Original by Info-ZIP.
+/home/jolson/anaconda3/bin/patch
+GNU patch 2.7.6
+cmake version 3.22.1
+Python: /usr/bin/python3 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]
+Machine: x86_64
+AVX-512 present (optional for anon_cred): False
+Required CPU extensions missing: []
+11.4.0
+Upstream recommended: GCC >=13.2, CMake >=3.26. Older installed versions may work; build log is authoritative.
+ENVIRONMENT_CHECK_PASSED

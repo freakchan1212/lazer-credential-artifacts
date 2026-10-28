@@ -1,0 +1,8 @@
+{
+  "status": "PASSED",
+  "test_scope": "single-thread multi-instance residency & statement-switch test",
+  "concurrent_instances_tested": 40,
+  "reprove_cache_hits": 20,
+  "reprove_cache_populates": 0,
+  "statement_switches_tested": 4
+}

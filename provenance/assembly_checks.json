@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-27",
+  "original_manifests": [
+    {
+      "attachment": 1,
+      "verified_files": 709
+    },
+    {
+      "attachment": 2,
+      "verified_files": 863
+    },
+    {
+      "attachment": 3,
+      "verified_files": 54
+    }
+  ],
+  "independent_summary_matches": true,
+  "raw_files_identical_to_main_tar": 812,
+  "original_docx_bytes_unchanged": true,
+  "main_pdf_pages": 10,
+  "supplement_pdf_pages": 11,
+  "redraw_entry_succeeded": true,
+  "native_build_and_benchmarks_rerun": false
+}

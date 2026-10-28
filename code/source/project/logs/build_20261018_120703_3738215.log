@@ -1,0 +1,173 @@
+Log: /home/jolson/下载/LaZer_E4_Supplement/project/logs/build_20261018_120703_3738215.log
+Log: /home/jolson/下载/LaZer_E4_Supplement/project/logs/check_env_20261018_120703_3738223.log
+=== Host and compiler ===
+Linux joson 6.8.0-138-generic #138~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Aug  7 13:43:15 UTC  x86_64 x86_64 x86_64 GNU/Linux
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc
+gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+/usr/bin/make
+GNU Make 4.3
+/usr/bin/unzip
+UnZip 6.00 of 20 April 2009, by Debian. Original by Info-ZIP.
+/home/jolson/anaconda3/bin/patch
+GNU patch 2.7.6
+cmake version 3.22.1
+Python: /usr/bin/python3.10 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]
+Machine: x86_64
+AVX-512 present (optional for anon_cred): False
+Required CPU extensions missing: []
+11.4.0
+Upstream recommended: GCC >=13.2, CMake >=3.26. Older installed versions may work; build log is authoritative.
+ENVIRONMENT_CHECK_PASSED
+SOURCE_INTEGRITY_OK: 341 pristine hashes; 6 documented modified files
+FROZEN_RELEASE_HASH_OK: 511 files; LAZER-E4-SUPPLEMENT-20261018
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting cffi<3,>=1.15
+  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/75/77/60bebf6f818bec84210ac5b6979ce4eeadce6fbbaabc9c7ab23e506d1ce5/cffi-2.1.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (218 kB)
+Collecting setuptools<83,>=68
+  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl (1.0 MB)
+Collecting wheel
+  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/2e/29/69cfbb602cd91690c55d38ba9fe53e6a7e76a6fa647bf38f19c138d25449/wheel-0.48.0-py3-none-any.whl (33 kB)
+Collecting pycparser
+  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/90/11/0e6f11117525ff0eec40ebac3d313376f102df93ca44ad9e893ee85e4f89/pycparser-3.11-py3-none-any.whl (51 kB)
+Collecting packaging>=24.0
+  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl (129 kB)
+Installing collected packages: setuptools, pycparser, packaging, wheel, cffi
+  Attempting uninstall: setuptools
+    Found existing installation: setuptools 59.6.0
+    Uninstalling setuptools-59.6.0:
+      Successfully uninstalled setuptools-59.6.0
+Successfully installed cffi-2.1.1 packaging-26.3 pycparser-3.11 setuptools-82.0.1 wheel-0.48.0
+-- The C compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Looking for dlfcn.h
+-- Looking for dlfcn.h - found
+-- Looking for getauxval
+-- Looking for getauxval - found
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jolson/下载/LaZer_E4_Supplement/project/.build/cpu_features
+[ 12%] Building C object CMakeFiles/utils.dir/src/filesystem.c.o
+[ 25%] Building C object CMakeFiles/unix_based_hardware_detection.dir/src/hwcaps.c.o
+[ 37%] Building C object CMakeFiles/utils.dir/src/stack_line_reader.c.o
+[ 37%] Built target unix_based_hardware_detection
+[ 50%] Building C object CMakeFiles/utils.dir/src/string_view.c.o
+[ 50%] Built target utils
+[ 62%] Building C object CMakeFiles/cpu_features.dir/src/cpuinfo_x86.c.o
+[ 75%] Linking C static library libcpu_features.a
+[ 75%] Built target cpu_features
+[ 87%] Building C object CMakeFiles/list_cpu_features.dir/src/utils/list_cpu_features.c.o
+[100%] Linking C executable list_cpu_features
+[100%] Built target list_cpu_features
+-- Install configuration: "Release"
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/lib/libcpu_features.a
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features/cpu_features_macros.h
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features/cpu_features_cache_info.h
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features/cpuinfo_x86.h
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/bin/list_cpu_features
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/lib/cmake/CpuFeatures/CpuFeaturesTargets.cmake
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/lib/cmake/CpuFeatures/CpuFeaturesTargets-release.cmake
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/lib/cmake/CpuFeatures/CpuFeaturesConfig.cmake
+-- Installing: /home/jolson/下载/LaZer_E4_Supplement/project/.deps/lib/cmake/CpuFeatures/CpuFeaturesConfigVersion.cmake
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- CMAKE_BUILD_TYPE:              Release
+-- CMAKE_C_COMPILER:              /home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc
+-- CMAKE_CXX_COMPILER:            /home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++
+-- HEXL_BENCHMARK:                OFF
+-- HEXL_COVERAGE:                 OFF
+-- HEXL_DEBUG:                    OFF
+-- HEXL_DOCS:                     OFF
+-- HEXL_EXPERIMENTAL:             OFF
+-- HEXL_SHARED_LIB:               OFF
+-- HEXL_TESTING:                  OFF
+-- HEXL_TREAT_WARNING_AS_ERROR:   OFF
+-- HEXL_FPGA_COMPATIBILITY:       0
+-- CMAKE_CXX_FLAGS_DEBUG -g
+-- CMAKE_CXX_FLAGS_RELEASE -O3 -DNDEBUG
+-- CMAKE_CXX_FLAGS_MINSIZEREL -Os -DNDEBUG
+-- CMAKE_CXX_FLAGS_RELWITHDEBINFO -O2 -g -DNDEBUG
+-- CMAKE_CXX_FLAGS 
+-- Compile flag not found: HEXL_HAS_AVX512DQ
+-- Compile flag not found: HEXL_HAS_AVX512IFMA
+-- Compile flag not found: HEXL_HAS_AVX512VBMI2
+-- Setting HEXL_HAS_AVX256
+-- CMAKE_INSTALL_LIBDIR:     lib
+-- CMAKE_INSTALL_INCLUDEDIR: include
+-- CMAKE_INSTALL_PREFIX:     /usr/local
+-- CpuFeatures: found
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build
+[  8%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-reduce-mod.cpp.o
+[ 16%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-mult-mod.cpp.o
+[ 25%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-sub-mod.cpp.o
+[ 33%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-add-mod.cpp.o
+[ 41%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-fma-mod.cpp.o
+[ 50%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-cmp-add.cpp.o
+[ 58%] Building CXX object hexl/CMakeFiles/hexl.dir/eltwise/eltwise-cmp-sub-mod.cpp.o
+[ 66%] Building CXX object hexl/CMakeFiles/hexl.dir/ntt/ntt-internal.cpp.o
+[ 75%] Building CXX object hexl/CMakeFiles/hexl.dir/ntt/ntt-radix-2.cpp.o
+[ 83%] Building CXX object hexl/CMakeFiles/hexl.dir/ntt/ntt-radix-4.cpp.o
+[ 91%] Building CXX object hexl/CMakeFiles/hexl.dir/number-theory/number-theory.cpp.o
+[100%] Linking CXX static library lib/libhexl.a
+[100%] Built target hexl
+make: 进入目录“/home/jolson/下载/LaZer_E4_Supplement/project/lazer”
+make: 警告：文件“lazer.h”的修改时间在未来 302 秒后
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -DNDEBUG -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -I. -c -o src/lazer_static.o src/lazer.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DNDEBUG -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Isrc -Ithird_party/hexl-development/hexl/include -c -o src/hexl_static.o src/hexl.cpp
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/codec_static.o third_party/Falcon-impl-20211101/codec.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/common_static.o third_party/Falcon-impl-20211101/common.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/falcon_static.o third_party/Falcon-impl-20211101/falcon.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/fft_static.o third_party/Falcon-impl-20211101/fft.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/fpr_static.o third_party/Falcon-impl-20211101/fpr.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/keygen_static.o third_party/Falcon-impl-20211101/keygen.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/rng_static.o third_party/Falcon-impl-20211101/rng.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/shake_static.o third_party/Falcon-impl-20211101/shake.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/sign_static.o third_party/Falcon-impl-20211101/sign.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -o third_party/Falcon-impl-20211101/vrfy_static.o third_party/Falcon-impl-20211101/vrfy.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -DNDEBUG -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -I. -c -fPIC -o src/lazer_shared.o src/lazer.c
+In file included from src/lazer.c:33:
+src/urandom.c: In function ‘_urandom_bnd’:
+src/urandom.c:56:20: warning: ‘((limb_t *)tmpbytes__)[4294967295]’ may be used uninitialized [-Wmaybe-uninitialized]
+   56 |   for (; tmp->limbs[top] == 0 && top > 0; top--)
+      |          ~~~~~~~~~~^~~~~
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DNDEBUG -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Isrc -Ithird_party/hexl-development/hexl/include -c -fPIC -o src/hexl_shared.o src/hexl.cpp
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/codec_shared.o third_party/Falcon-impl-20211101/codec.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/common_shared.o third_party/Falcon-impl-20211101/common.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/falcon_shared.o third_party/Falcon-impl-20211101/falcon.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/fft_shared.o third_party/Falcon-impl-20211101/fft.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/fpr_shared.o third_party/Falcon-impl-20211101/fpr.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/keygen_shared.o third_party/Falcon-impl-20211101/keygen.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/rng_shared.o third_party/Falcon-impl-20211101/rng.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/shake_shared.o third_party/Falcon-impl-20211101/shake.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/sign_shared.o third_party/Falcon-impl-20211101/sign.c
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -Ithird_party/Falcon-impl-20211101 -c -fPIC -o third_party/Falcon-impl-20211101/vrfy_shared.o third_party/Falcon-impl-20211101/vrfy.c
+ar rcs liblazer.a src/lazer_static.o src/hexl_static.o third_party/Falcon-impl-20211101/codec_static.o third_party/Falcon-impl-20211101/common_static.o third_party/Falcon-impl-20211101/falcon_static.o third_party/Falcon-impl-20211101/fft_static.o third_party/Falcon-impl-20211101/fpr_static.o third_party/Falcon-impl-20211101/keygen_static.o third_party/Falcon-impl-20211101/rng_static.o third_party/Falcon-impl-20211101/shake_static.o third_party/Falcon-impl-20211101/sign_static.o third_party/Falcon-impl-20211101/vrfy_static.o
+/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/gcc -DNDEBUG -Wall -Wextra -O3 -g -march=native -mtune=native -fomit-frame-pointer -DFALCON_FPNATIVE -DFALCON_AVX2 -DFALCON_FMA  -I. -shared -o liblazer.so src/lazer_shared.o src/hexl_shared.o third_party/Falcon-impl-20211101/codec_shared.o third_party/Falcon-impl-20211101/common_shared.o third_party/Falcon-impl-20211101/falcon_shared.o third_party/Falcon-impl-20211101/fft_shared.o third_party/Falcon-impl-20211101/fpr_shared.o third_party/Falcon-impl-20211101/keygen_shared.o third_party/Falcon-impl-20211101/rng_shared.o third_party/Falcon-impl-20211101/shake_shared.o third_party/Falcon-impl-20211101/sign_shared.o third_party/Falcon-impl-20211101/vrfy_shared.o
+make: 警告：检测到时钟错误。您的构建版本可能是不完整的。
+make: 离开目录“/home/jolson/下载/LaZer_E4_Supplement/project/lazer”
+make: 进入目录“/home/jolson/下载/LaZer_E4_Supplement/project/lazer/python”
+python3 lazer_cffi_build.py ..
+generating ./_lazer_cffi.c
+the current directory is '/home/jolson/下载/LaZer_E4_Supplement/project/lazer/python'
+make: 离开目录“/home/jolson/下载/LaZer_E4_Supplement/project/lazer/python”
+generating ./_anon_cred_params_cffi.c
+the current directory is '/home/jolson/下载/LaZer_E4_Supplement/project/lazer/python/anon_cred'
+ANON_CRED_IMPORT_OK
+BUILD_PASSED

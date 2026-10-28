@@ -1,0 +1,3 @@
+variant,n,standard_calls,bimodal_calls,candidate_fast,candidate_fallback,std_limb,std_positive_exponent,std_other_domain,std_nonfinite,std_guard_band,bim_limb,bim_domain,bim_nonfinite,bim_guard_band,standard_reference_mpfr_ns,bimodal_reference_mpfr_ns,candidate_reference_disagreements,meaning
+D3,100,598,464,750,312,0,312,0,0,0,0,0,0,0,3713970,2762629,0,shadow timing includes MPFR setup/conversion/compare/clear; extra clock calls; not pure exp/cosh microbenchmark
+DC3,100,590,462,747,305,0,305,0,0,0,0,0,0,0,3773387,2722581,0,shadow timing includes MPFR setup/conversion/compare/clear; extra clock calls; not pure exp/cosh microbenchmark

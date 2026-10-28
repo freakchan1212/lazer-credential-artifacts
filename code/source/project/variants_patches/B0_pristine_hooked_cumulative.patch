@@ -1,0 +1,107 @@
+--- a/lazer/src/lin-proofs.c
++++ b/lazer/src/lin-proofs.c
+@@ -1447,6 +1447,7 @@
+ 
+   while (1)
+     {
++      baseline_counts[0]++;
+       /* sample signs */
+       if (nrbits == 0)
+         {
+@@ -1695,6 +1696,7 @@
+                              params->stdev3sqr);
+           if (rej)
+             {
++              baseline_counts[1]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject s3");
+               continue;
+             }
+@@ -1708,6 +1710,7 @@
+                              params->stdev4sqr);
+           if (rej)
+             {
++              baseline_counts[2]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject s3");
+               continue;
+             }
+--- a/lazer/src/lnp-quad.c
++++ b/lazer/src/lnp-quad.c
+@@ -151,6 +151,7 @@
+   dom = 0;
+   while (1)
+     {
++      baseline_counts[3]++;
+       /* y1, y2 */
+ 
+       polyvec_grandom (y1, params->log2stdev1, yseed, dom);
+@@ -249,6 +250,7 @@
+                               params->stdev1sqr);
+           if (rej)
+             {
++              baseline_counts[4]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject on s1");
+               continue;
+             }
+@@ -268,6 +270,7 @@
+                                params->stdev1sqr);
+           if (rej)
+             {
++              baseline_counts[5]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject compr");
+               continue;
+             }
+@@ -281,6 +284,7 @@
+       rej = int_gt (norm, params->Bsqr);
+       if (rej)
+         {
++          baseline_counts[6]++;
+           DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject on s1");
+           continue;
+         }
+--- a/lazer/python/lazer.py
++++ b/lazer/python/lazer.py
+@@ -1,7 +1,15 @@
+ ## @package lazer
+ #  lazer's python interface.
+ 
+-from _lazer_cffi import ffi, lib
++try:
++    from _lazer_cffi import ffi, lib
++except ModuleNotFoundError:
++    import importlib.util, os, sysconfig
++    _so = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_lazer_cffi" + (sysconfig.get_config_var("EXT_SUFFIX") or ".so"))
++    _spec = importlib.util.spec_from_file_location("_lazer_cffi", _so)
++    _mod = importlib.util.module_from_spec(_spec)
++    _spec.loader.exec_module(_mod)
++    ffi, lib = _mod.ffi, _mod.lib
+ #import numpy as np
+ import math
+ import copy
+@@ -1602,6 +1610,8 @@
+             assert cur_col==self.cols
+         elif type(val) == polymat_t:
+             lib.polymat_set(self.ptr,val.ptr)
++        else:
++            lib.polymat_set(self.ptr,val)
+ 
+     def __del__(self):
+         """Automatic destructor. Calls the C destructor to release memory from the ptr attribute
+--- a/lazer/python/anon_cred/anon_cred.py
++++ b/lazer/python/anon_cred/anon_cred.py
+@@ -6,7 +6,15 @@
+ import sys
+ import time
+ 
+-from _anon_cred_params_cffi import lib
++try:
++    from _anon_cred_params_cffi import lib
++except ModuleNotFoundError:
++    import importlib.util, os, sysconfig
++    _so = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_anon_cred_params_cffi" + (sysconfig.get_config_var("EXT_SUFFIX") or ".so"))
++    _spec = importlib.util.spec_from_file_location("_anon_cred_params_cffi", _so)
++    _mod = importlib.util.module_from_spec(_spec)
++    _spec.loader.exec_module(_mod)
++    lib = _mod.lib
+ from anon_cred_p1_params import mod, deg, wl2
+ 
+ # 64-deg ring

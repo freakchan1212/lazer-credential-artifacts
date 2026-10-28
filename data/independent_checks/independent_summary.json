@@ -1,0 +1,61 @@
+{
+  "total_jobs": 406,
+  "all_rows": 13972,
+  "nonwarmup_rows": 13194,
+  "formal_timing_rows": 12480,
+  "formal_main_rows": 7200,
+  "unique_formal_proofs": 12480,
+  "counts": [
+    {
+      "task": "main",
+      "formal": true,
+      "n": 7200
+    },
+    {
+      "task": "reuse",
+      "formal": true,
+      "n": 3840
+    },
+    {
+      "task": "policy",
+      "formal": true,
+      "n": 900
+    },
+    {
+      "task": "k_sweep",
+      "formal": true,
+      "n": 540
+    },
+    {
+      "task": "subsets",
+      "formal": false,
+      "n": 514
+    },
+    {
+      "task": "diagnostic",
+      "formal": false,
+      "n": 200
+    }
+  ],
+  "bootstrap": [
+    {
+      "lifecycle": "steady",
+      "mean_reduction_percent": 3.832581486497466,
+      "absolute_ms": 2.6617602983333324,
+      "improved_blocks": 15,
+      "ci_low": -0.41439710856418116,
+      "ci_high": 8.390161504982274,
+      "algorithm": "numpy.default_rng; one independent generator reset per lifecycle; stratified pairs; 25000 draws"
+    },
+    {
+      "lifecycle": "fresh",
+      "mean_reduction_percent": 6.874215691055374,
+      "absolute_ms": 6.212356780000001,
+      "improved_blocks": 21,
+      "ci_low": 2.817726593305426,
+      "ci_high": 10.692768350278188,
+      "algorithm": "numpy.default_rng; one independent generator reset per lifecycle; stratified pairs; 25000 draws"
+    }
+  ],
+  "failed_statuses": []
+}

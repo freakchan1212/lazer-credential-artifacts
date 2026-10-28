@@ -1,0 +1,94 @@
+--- V1/lazer/src/lin-proofs.c
++++ V2/lazer/src/lin-proofs.c
+@@ -1677,37 +1677,24 @@
+ 
+           if (Rq->q->nlimbs == 1)
+             {
+-              int64_t sRs3coeff[256];
++              /* Direction 6 (V2): flat int64_t buffer + branchless AVX2 dot product for z3 */
++              int64_t s3_flat[nex * d];
+               int64_t scoeff;
+               int_ptr iptr;
+ 
+-              memset (sRs3coeff, 0, sizeof (sRs3coeff));
++              for (j = 0; j < nex * d; j++)
++                s3_flat[j] = int_get_i64 (intvec_get_elem (s3coeffs, j));
+ 
+               for (i = 0; i < 256; i++)
+                 {
++                  int64_t acc = 0;
+                   __expand_R_i (Ri, nex * d, i, cseed);
+ 
+                   for (j = 0; j < nex * d; j++)
+-                    {
+-                      if (Ri[j] == 0)
+-                        {
+-                        }
+-                      else
+-                        {
+-                          ASSERT_ERR (Ri[j] == 1 || Ri[j] == -1);
+-
+-                          s3coeff = intvec_get_elem (s3coeffs, j);
+-                          scoeff = int_get_i64 (s3coeff);
+-
+-                          sRs3coeff[i] += Ri[j] * scoeff;
+-                        }
+-                    }
+-                }
+-              for (i = 0; i < 256; i++)
+-                {
++                    acc += (int64_t)Ri[j] * s3_flat[j];
++
+                   iptr = intvec_get_elem (z3coeffs, i);
+-                  scoeff = int_get_i64 (iptr);
+-                  scoeff += beta3 * sRs3coeff[i];
++                  scoeff = int_get_i64 (iptr) + beta3 * acc;
+                   int_set_i64 (iptr, scoeff);
+                 }
+             }
+@@ -1755,37 +1742,24 @@
+ 
+           if (Rq->q->nlimbs == 1)
+             {
+-              int64_t sRs4coeff[256];
++              /* Direction 6 (V2): flat int64_t buffer + branchless AVX2 dot product for z4 */
++              int64_t s4_flat[nprime * d];
+               int64_t scoeff;
+               int_ptr iptr;
+ 
+-              memset (sRs4coeff, 0, sizeof (sRs4coeff));
++              for (j = 0; j < nprime * d; j++)
++                s4_flat[j] = int_get_i64 (intvec_get_elem (s4coeffs, j));
+ 
+               for (i = 0; i < 256; i++)
+                 {
++                  int64_t acc = 0;
+                   __expand_Rprime_i (Rprimei, nprime * d, i, cseed);
+ 
+                   for (j = 0; j < nprime * d; j++)
+-                    {
+-                      if (Rprimei[j] == 0)
+-                        {
+-                        }
+-                      else
+-                        {
+-                          ASSERT_ERR (Rprimei[j] == 1 || Rprimei[j] == -1);
+-
+-                          s4coeff = intvec_get_elem (s4coeffs, j);
+-                          scoeff = int_get_i64 (s4coeff);
+-
+-                          sRs4coeff[i] += Rprimei[j] * scoeff;
+-                        }
+-                    }
+-                }
+-              for (i = 0; i < 256; i++)
+-                {
++                    acc += (int64_t)Rprimei[j] * s4_flat[j];
++
+                   iptr = intvec_get_elem (z4coeffs, i);
+-                  scoeff = int_get_i64 (iptr);
+-                  scoeff += beta4 * sRs4coeff[i];
++                  scoeff = int_get_i64 (iptr) + beta4 * acc;
+                   int_set_i64 (iptr, scoeff);
+                 }
+             }

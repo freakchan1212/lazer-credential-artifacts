@@ -1,0 +1,1 @@
+{"block": 0, "cases": 1009, "formal": false, "round": 0, "scope": "native magnitude preflight against Python integer oracle", "status": "PASSED", "task": "guard", "variant": "G3", "verification_mode": "strict"}

@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "paper": "面向重复出示与选择性披露的 LaZer 匿名凭证实现优化",
+  "input_zip_sha256": {
+    "精简代码复现包.zip": "46bd58470c0329becdc6d8c491387f6bf8e3f5567e6ee432f2f3f2e02aaf8bec",
+    "中文图包.zip": "a3915a239b7eff5e19f5219af1e576a5154697f3266be8ecbafd7639fa295c5a",
+    "专项回归证据.zip": "525bebbfe0968d7153920d40b8ae42d4cc9b7faf914f192353c18eae8553049a"
+  },
+  "full_original_archive": "第二篇小论文_V3_投稿可复现附件(1).zip::results/E4_MAIN_FULL_ORIGINAL.tar.gz",
+  "full_archive_sha256": "b15788de7385b809e4e750c7e92714b47567734139b1a2686ac750bc1d02afe1",
+  "batch": "e4_full_20261018_121816_c2df8c",
+  "core_source_unchanged": true,
+  "formal_data_unchanged": true,
+  "figure_files_unchanged": true,
+  "native_experiments_rerun": false
+}

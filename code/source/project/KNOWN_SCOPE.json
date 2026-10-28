@@ -1,0 +1,11 @@
+{
+  "scope_frozen_now": true,
+  "implemented": ["original issuer key generation", "original blind issuance P1", "original selective-disclosure presentation P2", "fresh issuance workload", "same credential repeated fresh-randomness presentation workload", "seven screenshot performance categories", "six screenshot security evidence categories", "original API behavior controls", "AVX2 build", "frozen source and parameter checks"],
+  "security_evidence_scope": {
+    "classical_quantum": "fixed generic GSA/Core-SVP attack estimates for P1/P2 MSIS/MLWE and a Falcon generic preimage proxy; no exhaustive attack coverage",
+    "unforgeability_anonymity": "original conditional construction properties and assumptions, not a new concrete security reduction",
+    "knowledge_error": "original 2^-127 header declarations and recomputation of the upstream expression",
+    "zero_knowledge": "original computational simulatability assumptions and unchanged sampler/rejection metadata; no new numeric full advantage/statistical distance bound"
+  },
+  "outside_original_demo_and_not_claimed": ["full set of experiments in the LaZer or BLNS papers", "session challenge binding and replay prevention", "revocation", "traceability", "credential non-transferability", "arbitrary issuer/verifier collusion model", "transport parser hardening or fuzzing", "network latency and throughput", "energy and hardware CPU cycles", "new whole-protocol numeric security certification", "numeric zero-knowledge statistical-distance derivation"]
+}

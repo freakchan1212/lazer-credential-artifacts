@@ -1,0 +1,6 @@
+{
+  "status": "PASSED",
+  "cases_checked": 39,
+  "a_pos_2_63_mod_12289": 2832,
+  "a_neg_2_63_mod_12289": -2832
+}

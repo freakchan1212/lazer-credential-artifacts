@@ -1,0 +1,15 @@
+{
+  "title": "A Framework for Practical Anonymous Credentials from Lattices",
+  "authors": [
+    "Jonathan Bootle",
+    "Vadim Lyubashevsky",
+    "Ngoc Khanh Nguyen",
+    "Alessandro Sorniotti"
+  ],
+  "source_url": "https://ale.sopit.net/pdf/2023-560.pdf",
+  "official_eprint": "https://eprint.iacr.org/2023/560",
+  "sha256": "4203d1c903aa95b79bbad0edadf75eedb08051de98a42b261235b73f385df76f",
+  "bytes": 1130745,
+  "author_hosted_full_text": true,
+  "eprint_page_notes_major_revision_of_crypto2023": true
+}

@@ -1,0 +1,129 @@
+progress 10/80; freed-address reuse observations=1
+progress 20/80; freed-address reuse observations=6
+progress 30/80; freed-address reuse observations=12
+progress 40/80; freed-address reuse observations=19
+progress 50/80; freed-address reuse observations=32
+progress 60/80; freed-address reuse observations=42
+progress 70/80; freed-address reuse observations=52
+progress 80/80; freed-address reuse observations=65
+{
+  "status": "PASSED_POINTER_REUSE_OBSERVED",
+  "cycles": 80,
+  "strict_verifications": 320,
+  "negative_rejections": 80,
+  "freed_address_reuse_observations": 65,
+  "distinct_prover_Ds_addresses": 48,
+  "distinct_verifier_Ds_addresses": 47,
+  "reuse_examples": [
+    {
+      "kind": "verifier",
+      "new_cycle": 9,
+      "prior_cycle": 5
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 11,
+      "prior_cycle": 4
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 14,
+      "prior_cycle": 2
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 15,
+      "prior_cycle": 4
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 17,
+      "prior_cycle": 7
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 19,
+      "prior_cycle": 4
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 21,
+      "prior_cycle": 15
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 23,
+      "prior_cycle": 0
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 23,
+      "prior_cycle": 16
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 27,
+      "prior_cycle": 4
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 27,
+      "prior_cycle": 2
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 29,
+      "prior_cycle": 19
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 30,
+      "prior_cycle": 2
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 33,
+      "prior_cycle": 16
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 35,
+      "prior_cycle": 7
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 36,
+      "prior_cycle": 15
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 37,
+      "prior_cycle": 4
+    },
+    {
+      "kind": "verifier",
+      "new_cycle": 37,
+      "prior_cycle": 2
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 38,
+      "prior_cycle": 7
+    },
+    {
+      "kind": "prover",
+      "new_cycle": 40,
+      "prior_cycle": 0
+    }
+  ],
+  "min_counters": {
+    "hits_same": 4,
+    "populates_switch": 2,
+    "populates_restore": 2
+  },
+  "native_library": "/home/jolson/下载/LZ_E4_REVIEW_SMOKE/LaZer_E4_Supplement/project/lazer/liblazer.so",
+  "elapsed_seconds": 34.051,
+  "test_scope": "single-thread native Ds pointer address reuse, cache invalidation, policy switching and strict proof verification",
+  "limitations": "Finite regression only. Does not test unsanctioned in-place matrix mutation, multithreading or all memory allocators."
+}
+SAVED: /home/jolson/下载/LZ_E4_REVIEW_SMOKE/LaZer_E4_Supplement/e4_cache_pointer_stress.json

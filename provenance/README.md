@@ -1,0 +1,7 @@
+# 来源与旧包对比
+
+input_archives.json记录用户提供的4份ZIP的文件名、SHA256和规模。current_vs_legacy.json及current_to_legacy.diff比较当前附件1的source/project与旧最终包project，680个同路径文件完全相同，12个同路径文件不同；当前独有1个环境日志，旧包独有223个文件。
+
+差异不只在文件名：旧包rejection.c包含浮点影子诊断与计时插桩，审计脚本和清单也不同。旧包还含本机编译产物、构建缓存、较早实验/文档和旧7图布局。不能把旧包全量覆盖当前附件后声称与V6主实验指纹一致。因此主复现入口保持当前附件1原样；旧包仅保留少量来源说明、验证记录及完整源码差异清单，未合并旧计时或把历史样本加入当前统计。
+
+原始4份输入ZIP保留在用户上传资料中，本仓库不重复嵌套85MB旧ZIP。legacy_reference只供追溯，不是当前运行入口。attachment2_original中的README和图表清单描述原7图附件；当前8图与V6的关系以仓库README及figures/figure_mapping.csv为准。

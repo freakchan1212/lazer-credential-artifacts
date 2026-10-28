@@ -1,0 +1,9 @@
+figure,content,data_source,location
+图1,声明复用与紧致关系,机制示意；source/project相关实现,正文图1
+图2,严格验证耗时,data/derived/main_summary.csv,正文图2
+图3,紧致化增量与区间,data/independent_checks/independent_summary.json,正文图3
+图4,完整服务摊销曲线,data/derived/reuse.csv,正文图4；69×59.98 mm原嵌图框
+图5,同披露数证明大小,data/derived/k_sweep.csv,正文图5
+图S1,回归与分块效果,data/derived/main_summary.csv;data/derived/block_effects.csv,补充图S1
+图S2,耗时经验分布,data/derived/samples.csv,补充图S2
+图S3,完整服务摊销,data/derived/reuse.csv,补充图S3；与正文图4同数据大尺寸图

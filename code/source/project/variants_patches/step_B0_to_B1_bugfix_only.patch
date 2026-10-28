@@ -1,0 +1,218 @@
+--- B0/lazer/src/lin-proofs.c
++++ B1/lazer/src/lin-proofs.c
+@@ -4625,6 +4625,8 @@
+ 
+   if (A->ring->d == 64 || A->ring->d == 128)
+     polymat_fromcrt (A);
++  polymat_mod (A, A);
++  polymat_redc (A, A);
+ 
+   polymat_alloc (Ds_, Rprime, nrows, params->ns1_indices);
+   if (l > 0)
+@@ -4673,6 +4675,8 @@
+     {
+       if (t->ring->d == 64 || t->ring->d == 128)
+         polyvec_fromcrt (t);
++      polyvec_mod (t, t);
++      polyvec_redc (t, t);
+ 
+       // XXXpolyvec_dump (t);
+       lin_toisoring (NULL, state->u, NULL, t);
+--- B0/lazer/src/lnp-quad.c
++++ B1/lazer/src/lnp-quad.c
+@@ -267,7 +267,7 @@
+                                 params->stdev2sqr);
+           if (params->rej2 == 2)
+             rej = rej_bimodal (rngstate, z2coeffs, cs2coeffs, params->scM2,
+-                               params->stdev1sqr);
++                               params->stdev2sqr);
+           if (rej)
+             {
+               baseline_counts[5]++;
+--- B0/lazer/src/blindsig.c
++++ B1/lazer/src/blindsig.c
+@@ -734,7 +734,8 @@
+       intvec_grandom (coeffvec, 1, protoseed, dom++);
+       for (i = 0; i < 512; i++)
+         {
+-          state->r2[i] = (int32_t)intvec_get_elem_i64 (coeffvec, i);
++          coeff = (int32_t)intvec_get_elem_i64 (coeffvec, i);
++          state->r2[i] = coeff;
+           l2sqr += (int64_t)coeff * coeff;
+         }
+     }
+--- B0/lazer/python/lazer.py
++++ B1/lazer/python/lazer.py
+@@ -2578,20 +2578,25 @@
+     # def set_witness(self, w: polyvec_t):
+     #     lib.lin_verifier_set_witness(self.ptr, w.ptr)
+ 
+-    def verify(self, proof: bytes):
++    def verify(self, proof: bytes, strict: bool = False):
+         """Verifies the ZK proof
+ 
+         Args:
+             proof (bytes): the ZK proof
++            strict (bool): if True, reject trailing bytes after the encoded proof
+         
+         Returns:
+             nothing, or throws exception if the proof is invalid
+-
+         """
+         prooflen = ffi.new("size_t[1]")
+         accept = lib.lin_verifier_verify(self.ptr, proof, prooflen)
+         if accept != 1:
+             raise VerificationError("Verification failed.")
++        if strict and prooflen[0] != len(proof):
++            raise VerificationError("Trailing bytes in proof.")
++
++    def verify_strict(self, proof: bytes):
++        return self.verify(proof, strict=True)
+ 
+ def print_stopwatch_lnp_prover_prove(indent: int):
+     lib.print_stopwatch_lnp_prover_prove(indent)
+--- B0/lazer/python/anon_cred/anon_cred.py
++++ B1/lazer/python/anon_cred/anon_cred.py
+@@ -48,9 +48,14 @@
+     pass
+ 
+ 
++AR.redc(); AM.redc(); ATAU.redc(); B1.redc()
++
++
+ class user_t:
+     def __init__(self, pk: falcon_pkenc):
+         self.B2 = falcon_decode_pk(pk,RING) #
++        self.B2.redc()
++        self._B2_h2 = falcon_decode_pk(pk,RING)
+         self.p1_prover = lin_prover_state_t(P1PP, lib.get_params("p1_param"))
+         self.p2_prover = lin_prover_state_t(P2PP, lib.get_params("p2_param"))
+ 
+@@ -85,9 +90,8 @@
+         # return masked message t,p1enc
+         return tenc + proof
+ 
+-    def sign(self, blindsig: bytes, pub_mvec: list):
+-        # decode blindsig tau,s1,s2
+-        
++    def verify_blindsig(self, blindsig: bytes):
++        """BLNS23 Fig. 19 H2 check (B1 uncached): decode and validate (tau, s1, s2) from issuer."""
+         tau, s1, s2 = bytes(64), polyvec_t(RING,8), polyvec_t(RING,8)
+         try:
+             coder = coder_t()
+@@ -95,17 +99,29 @@
+             coder.dec_bytes(tau)
+             coder.dec_grandom(165, s1)
+             coder.dec_grandom(165, s2)
+-            coder.dec_end()
++            blindsig_len = coder.dec_end()
+         except DecodingError:
+-            raise InvalidMaskedMsg
+-
++            raise InvalidBlindSig("Blind signature decoding failed.")
++        if blindsig_len != len(blindsig):
++            raise InvalidBlindSig("Trailing bytes in blind signature.")
+         tau_ = polyvec_t(RING, 8, tau)
++        if s1.l2sqr() + s2.l2sqr() > 34034726:
++            raise InvalidBlindSig("Blind signature (s1, s2) l2-norm exceeds bound.")
++        if hasattr(self, "r") and hasattr(self, "m"):
++            lhs = B1 * s1.copy() + self._B2_h2 * s2.copy()
++            rhs = AR * self.r.copy() + AM * self.m.copy() + ATAU * tau_.copy()
++            if lhs != rhs:
++                raise InvalidBlindSig("Blind signature linear relation check failed.")
++        return tau_, s1, s2
++
++    def sign(self, blindsig: bytes, pub_mvec: list):
++        # decode and H2-validate blindsig tau,s1,s2
++        tau_, s1, s2 = self.verify_blindsig(blindsig)
++        pub_mvec = list(dict.fromkeys(pub_mvec))
+ 
+         # prove [Ar,Atau,-B1,-B2]*(r,tau,s1,s2) + Am*m = 0
+         # as PoK(w): Aw + u = 0
+-        
+         m_priv=self.m.zero_out_pols(pub_mvec)
+-        #m_priv=self.m.copy()
+         AM_priv=AM.zero_out_cols(pub_mvec)
+         if len(pub_mvec)==0:
+             u=polyvec_t(RING,8)
+@@ -113,9 +129,8 @@
+             m_pub=self.m.get_pol_list(pub_mvec)
+             AM_pub=AM.get_col_list(pub_mvec)
+             u=polyvec_t(RING, 8, [AM_pub * m_pub])
+-      
+-
+-        A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])        
++
++        A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
+         w = polyvec_t(RING, 48, [self.r, tau_, s1, s2, m_priv])
+ 
+         self.p2_prover.set_statement(A, u)
+@@ -130,7 +145,7 @@
+         self.sk = sk
+         self.p1_verifier = lin_verifier_state_t(P1PP, lib.get_params("p1_param"))
+ 
+-    def sign(self, masked_msg: bytes):
++    def sign(self, masked_msg: bytes, strict: bool = False):
+         # decode masked message
+         t = polyvec_t(RING,8)
+         try:
+@@ -148,7 +163,7 @@
+ 
+         self.p1_verifier.set_statement(A, u)
+         try:
+-            self.p1_verifier.verify(proof)
++            self.p1_verifier.verify(proof, strict=strict)
+         except VerificationError:
+             raise InvalidMaskedMsg("Masked message invalid.")
+ 
+@@ -158,7 +173,6 @@
+ 
+         # preimage sampling
+         s1, s2 = falcon_preimage_sample(self.sk, ATAU * tau + t,RING)
+-        #s1, s2 = falcon_preimage_sample(self.sk, ATAU * tau + t)
+ 
+         # encode blindsig tau,s1,s2
+         coder = coder_t()
+@@ -174,11 +188,21 @@
+ class verifier_t:
+     def __init__(self, pk: falcon_pkenc):
+         self.B2 = falcon_decode_pk(pk,RING)
++        self.B2.redc()
+         self.p2_verifier = lin_verifier_state_t(P2PP, lib.get_params("p2_param"))
+ 
+     #the private part should already be zeroed out in pub_msg 
+-    def verify(self, pub_msg: bytes, pub_mvec:list, sig: bytes):
+-        
++    def verify(self, pub_msg: bytes, pub_mvec:list, sig: bytes, strict: bool = False):
++        if strict:
++            if len(pub_msg) != 64:
++                raise InvalidSignature("Public message container must be 64 bytes.")
++            pub_set = set(pub_mvec)
++            if len(pub_set) != len(pub_mvec) or any(i < 0 or i >= 8 for i in pub_mvec):
++                raise InvalidSignature("Invalid disclosed attribute indices.")
++            for i in range(8):
++                if i not in pub_set and any(pub_msg[i*8:(i+1)*8]):
++                    raise InvalidSignature("Undisclosed attribute slot in pub_msg is non-zero.")
++        pub_mvec = list(dict.fromkeys(pub_mvec))
+         m = polyvec_t(RING, 8, pub_msg)
+         AM_priv=AM.zero_out_cols(pub_mvec)
+         if len(pub_mvec)==0:
+@@ -190,14 +214,16 @@
+ 
+         # verify proof for PoK(w): Aw + u = 0
+         A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
+-        #u = polyvec_t(RING, 8, [AM_pub * m_pub])
+         proof = sig
+         
+         self.p2_verifier.set_statement(A, u)
+         try:
+-            self.p2_verifier.verify(proof)
++            self.p2_verifier.verify(proof, strict=strict)
+         except VerificationError:
+             raise InvalidSignature("Signature invalid.")
++
++    def verify_strict(self, pub_msg: bytes, pub_mvec: list, sig: bytes):
++        return self.verify(pub_msg, pub_mvec, sig, strict=True)
+ 
+ 
+ # demo

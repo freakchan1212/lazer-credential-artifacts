@@ -1,0 +1,162 @@
+{
+  "variants": {
+    "B0": {
+      "id": "B0",
+      "code": "B0_pristine_hooked",
+      "name": "B0（上游原装代码 + 仅计数探针，不含漏洞修复与任何优化）",
+      "direction_added": "Baseline 0: 上游 10eafeca + baseline_hooks.h 计数探针（用于在相同 P-Core + performance 调频下复测纯净原装基线）",
+      "byte_identical_to_b1": false,
+      "byte_identical_to_v0": false,
+      "bugfixes_applied": false,
+      "optimizations_applied": false,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/B0_pristine_hooked_cumulative.patch"
+    },
+    "B1": {
+      "id": "B1",
+      "code": "B1_bugfix_only",
+      "name": "B1（仅 4 项安全与正确性修复，0 性能优化）",
+      "direction_added": "Baseline 1: 仅启用 4 项审计修复（lnp-quad.c stdev2sqr + blindsig.c r2 范数 + H2 持有者验签 + strict=True 边界检查），不含任何性能优化",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": false,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/B1_bugfix_only_cumulative.patch"
+    },
+    "V0": {
+      "id": "V0",
+      "code": "V0_google_base",
+      "name": "V0（B1 + 方向 1 R2*s 外提 + 方向 2 svR AVX2 + 方向 4a Python 矩阵缓存）",
+      "direction_added": "方向 1（lnp-quad.c R2*s 循环外提）+ 方向 2（lin-proofs.c 无分支 int64_t svR AVX2）+ 方向 4a（Python 层 A_P1/A_P2 静态矩阵缓存）",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/V0_google_base_cumulative.patch"
+    },
+    "V1": {
+      "id": "V1",
+      "code": "V1_opt5_c_statement_cache",
+      "name": "V1（V0 + 方向 5：C 层 Ds SHAKE128 字节对齐前缀缓存与 oDs/Ds CRT 域常驻）",
+      "direction_added": "方向 5：lin-proofs.c 静态矩阵 Ds 的 SHAKE128 无尾填充前缀缓存（修复 coder_enc_end 偏移）+ oDs 预计算与 CRT 域常驻（线程局部动态扩容表）",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/V1_opt5_c_statement_cache_cumulative.patch"
+    },
+    "V2": {
+      "id": "V2",
+      "code": "V2_opt6_arp_z34_avx2",
+      "name": "V2（V1 + 方向 6：Prover 端 ARP z3/z4 紧凑数组无分支 AVX2 向量化）",
+      "direction_added": "方向 6：lin-proofs.c 中 __lnp_tbox_compute_z34 预提取 s3/s4 紧凑 int64_t 数组并消除内层分支，激活 AVX2 点积",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/V2_opt6_arp_z34_avx2_cumulative.patch"
+    },
+    "V3A": {
+      "id": "V3A",
+      "code": "V3a_opt7a_lazy_cs2_only",
+      "name": "V3A（V2 + 方向 7a：仅启用 lnp-quad.c 惰性 cs2 计算，不改 poly_scale）",
+      "direction_added": "方向 7a：lnp-quad.c 惰性延迟计算 cs2 = c * s2（仅在 z1 通过 rej1 后才计算，消除 ~57% 失败轮次的 s2 运算）",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/V3a_opt7a_lazy_cs2_only_cumulative.patch"
+    },
+    "V3": {
+      "id": "V3",
+      "code": "V3_opt7_lazy_cs2_and_crt_scale",
+      "name": "V3（V2 + 方向 7：惰性 cs2 计算 + 修复无符号预约减的单 limb poly_scale 快速路径）",
+      "direction_added": "方向 7：lnp-quad.c 惰性延迟计算 cs2 = c * s2 + poly.c 无符号 uint64_t 预约减的原生 __int128 单 limb 标量模乘（全 64-bit 范围精确）",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/V3_opt7_lazy_cs2_and_crt_scale_cumulative.patch"
+    },
+    "V4": {
+      "id": "V4",
+      "code": "V4_opt8_double_fastpath_rejection",
+      "name": "V4（V3 + 方向 8：rejection.c IEEE-754 双精度保护带快速过滤 + 计数器）",
+      "direction_added": "方向 8：rejection.c 在 rej_standard 与 rej_bimodal 中引入 _int_to_double_hi53 硬件浮点快速过滤（1e-11 保护带 + 显式 ULP 误差界 + 命中/回退计数）",
+      "byte_identical_to_b1": true,
+      "byte_identical_to_v0": true,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": false,
+      "cumulative_patch": "variants_patches/V4_opt8_double_fastpath_rejection_cumulative.patch"
+    },
+    "V5": {
+      "id": "V5",
+      "code": "V5_opt9_dynamic_dim_pruning",
+      "name": "V5（V4 + 方向 9：披露参数化子空间投影，支持 k=1..8 全基数动态降维）",
+      "direction_added": "方向 9：anon_cred_params.h 导出 k=1..8 全套紧致参数集 p2_compact{k}_param（m1=48-k, nbin=16-k），k=3 时见证维度 48->45，证明体积缩减 ~619 B",
+      "byte_identical_to_b1": false,
+      "byte_identical_to_v0": false,
+      "bugfixes_applied": true,
+      "optimizations_applied": true,
+      "protocol_parameters_changed": true,
+      "cumulative_patch": "variants_patches/V5_opt9_dynamic_dim_pruning_cumulative.patch"
+    }
+  },
+  "incremental_patches": [
+    {
+      "from": "B0",
+      "to": "B1",
+      "direction": "Baseline 1: 仅启用 4 项审计修复（lnp-quad.c stdev2sqr + blindsig.c r2 范数 + H2 持有者验签 + strict=True 边界检查），不含任何性能优化",
+      "patch_file": "variants_patches/step_B0_to_B1_bugfix_only.patch"
+    },
+    {
+      "from": "B1",
+      "to": "V0",
+      "direction": "方向 1（lnp-quad.c R2*s 循环外提）+ 方向 2（lin-proofs.c 无分支 int64_t svR AVX2）+ 方向 4a（Python 层 A_P1/A_P2 静态矩阵缓存）",
+      "patch_file": "variants_patches/step_B1_to_V0_google_base.patch"
+    },
+    {
+      "from": "V0",
+      "to": "V1",
+      "direction": "方向 5：lin-proofs.c 静态矩阵 Ds 的 SHAKE128 无尾填充前缀缓存（修复 coder_enc_end 偏移）+ oDs 预计算与 CRT 域常驻（线程局部动态扩容表）",
+      "patch_file": "variants_patches/step_V0_to_V1_opt5_c_statement_cache.patch"
+    },
+    {
+      "from": "V1",
+      "to": "V2",
+      "direction": "方向 6：lin-proofs.c 中 __lnp_tbox_compute_z34 预提取 s3/s4 紧凑 int64_t 数组并消除内层分支，激活 AVX2 点积",
+      "patch_file": "variants_patches/step_V1_to_V2_opt6_arp_z34_avx2.patch"
+    },
+    {
+      "from": "V2",
+      "to": "V3A",
+      "direction": "方向 7a：lnp-quad.c 惰性延迟计算 cs2 = c * s2（仅在 z1 通过 rej1 后才计算，消除 ~57% 失败轮次的 s2 运算）",
+      "patch_file": "variants_patches/step_V2_to_V3a_opt7a_lazy_cs2_only.patch"
+    },
+    {
+      "from": "V2",
+      "to": "V3",
+      "direction": "方向 7：lnp-quad.c 惰性延迟计算 cs2 = c * s2 + poly.c 无符号 uint64_t 预约减的原生 __int128 单 limb 标量模乘（全 64-bit 范围精确）",
+      "patch_file": "variants_patches/step_V2_to_V3_opt7_lazy_cs2_and_crt_scale.patch"
+    },
+    {
+      "from": "V3",
+      "to": "V4",
+      "direction": "方向 8：rejection.c 在 rej_standard 与 rej_bimodal 中引入 _int_to_double_hi53 硬件浮点快速过滤（1e-11 保护带 + 显式 ULP 误差界 + 命中/回退计数）",
+      "patch_file": "variants_patches/step_V3_to_V4_opt8_double_fastpath_rejection.patch"
+    },
+    {
+      "from": "V4",
+      "to": "V5",
+      "direction": "方向 9：anon_cred_params.h 导出 k=1..8 全套紧致参数集 p2_compact{k}_param（m1=48-k, nbin=16-k），k=3 时见证维度 48->45，证明体积缩减 ~619 B",
+      "patch_file": "variants_patches/step_V4_to_V5_opt9_dynamic_dim_pruning.patch"
+    }
+  ]
+}

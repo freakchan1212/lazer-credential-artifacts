@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-18",
+  "platform": "AMD EPYC 9V74 cloud Linux x86_64; AVX2-compatible build; not user i5 timing",
+  "native_compilation": "PASSED: all E4 variants built",
+  "complete_smoke_with_plots": {
+    "measurements": "COMPLETE",
+    "verification": "PASSED",
+    "plots": "COMPLETE",
+    "mode": "smoke"
+  },
+  "fixed_coin_seeds_additional": {
+    "status": "PASSED",
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "byte_identical": [
+      "B1",
+      "G3"
+    ],
+    "compact_reduction_bytes": {
+      "1": 594,
+      "2": 624,
+      "3": 626
+    }
+  },
+  "guard_cases_each_variant": 1009,
+  "forced_generic_identity": [
+    "G3",
+    "C3"
+  ],
+  "cross_verification": "B1/G3 strict both directions in smoke",
+  "poly_scale_boundary_cases": 39,
+  "single_thread_cache_residency_instances": 40,
+  "all_256_disclosure_subsets": {
+    "G3": {
+      "legal_subsets": 256,
+      "recreated_objects": 1,
+      "all_checks_passed": true,
+      "scope": "single machine, fixed message instance; finite functional tests"
+    },
+    "C3": {
+      "legal_subsets": 256,
+      "recreated_objects": 1,
+      "all_checks_passed": true,
+      "scope": "single machine, fixed message instance; finite functional tests"
+    }
+  },
+  "resume_completed_batch": "PASSED: no measurements rerun",
+  "figures": {
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "figures_each": 7,
+    "formats": [
+      "png",
+      "pdf",
+      "svg"
+    ],
+    "legacy_E3_performance_redraw": "PASSED"
+  },
+  "local_full_performance": "NOT_RUN; user must run on own machine",
+  "whole_protocol_security_certified": false
+}

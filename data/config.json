@@ -1,0 +1,37 @@
+{
+  "mode": "full",
+  "profile": {
+    "rounds": 3,
+    "n": 200,
+    "block": 20,
+    "reuse": 256,
+    "repeats": 3,
+    "policy": 100,
+    "ksweep": 30,
+    "diag": 100,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "all_subsets": true
+  },
+  "cpu": 0,
+  "script_hashes": {
+    "run_e4.py": "3360e765ce067ecbc5e38a0fbc578e256d56cd81c145a3eccec121e9bc98399e",
+    "plot_e4.py": "a6529f21976e25f04b974735f9bee52c4d59287921475dbaf4849c7d024b9fe6",
+    "summarize_e4.py": "feba988809b05a28f246574f316c1e057b24add6994fea77e1c33aec71e85faa",
+    "project/e4_select.py": "4fe709f46db1de90fdee302724070023489f05e279ecc008d8672e8b4264e129",
+    "project/e4_worker.py": "39a44e813f88f3de097a140b869a6d647fc77843848d34dd21539be3440c4188",
+    "project/switch_variant.py": "0fdada71e09221d7f7df18f393b637a8d23a3a05684b9484bff811d738ea4187",
+    "project/pristine/upstream_snapshot.zip": "3ebe125efe57940fed6462654db32bd4703c98ade3ad6609a15d0e157cafe455",
+    "project/build_backend.sh": "842b45446066f4fa245d8abdf3abe6a537ded5a8a1202ae4fcfa48683da4723e",
+    "project/05_build_compatible.sh": "cdfdd7b1c16798e5c6862862b8b9b86138893cda9b3d477820e65e89343be240",
+    "project/06_rebuild_fast.sh": "25baec82c6f2ef0d3c5cb8fa893a0b21050cbd6db87e485e23eb9ca2b830a61e",
+    "project/baseline_hooks.h": "ccafa027b4bf071b6d510d381d75c23a36f1a7efc1c260cdc1a70f86e5221c11",
+    "project/security_audit.py": "1c348e06c0d245a2ff708b6fc6255de4d2f04cbd0ca120457ee10209c349c9ae",
+    "project/security_models_optional.py": "f8d7bda6e526c0101230aeba8e562cc9e5c71414f741608178802c64954be012",
+    "project/security_metrics.py": "46e782d855d68bb0e5f5c970ef28b794b46d49a7ff9c34984ef697224f40b2d6"
+  },
+  "schema": "E4-20261018"
+}

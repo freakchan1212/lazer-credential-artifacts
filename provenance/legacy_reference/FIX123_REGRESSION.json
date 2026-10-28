@@ -1,0 +1,61 @@
+{
+  "status": "PASSED",
+  "tests": [
+    {
+      "test": "actual_C3_all_scoped_conditions",
+      "passed": true,
+      "detail": "325"
+    },
+    {
+      "test": "B1_vs_C3_explicit_selection",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "archived_header_without_variant_rejected",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "detect_wrong_variance",
+      "passed": true,
+      "detail": "rounded_variances"
+    },
+    {
+      "test": "detect_wrong_q",
+      "passed": true,
+      "detail": "decomposition_constants,linear_ring_interface,prime_modulus_and_two_factors"
+    },
+    {
+      "test": "detect_missing_exact_index",
+      "passed": true,
+      "detail": "compact_layout,complete_disjoint_partition"
+    },
+    {
+      "test": "detect_wrong_nex",
+      "passed": true,
+      "detail": "internal_dimensions"
+    },
+    {
+      "test": "detect_wrong_nested_randomness",
+      "passed": true,
+      "detail": "nested_quad_many"
+    },
+    {
+      "test": "comment_constants_not_parameter_authority",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "resigned_mislabeled_raw_record_rejected",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "original_archives_and_fingerprints",
+      "passed": true,
+      "detail": "98 artifact files, 14 source hashes"
+    }
+  ],
+  "scope": "new audit and postprocessing regressions; no native proof/performance rerun"
+}
