@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Preserve artifact bytes across platforms; SHA256 manifests depend on exact bytes.
+* -text

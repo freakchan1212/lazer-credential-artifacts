@@ -5,7 +5,8 @@ title: "面向重复出示与选择性披露的LaZer匿名凭证实现优化：�
 authors:
   - family-names: Chen
     given-names: Shuai
-    affiliation: Jiangsu University of Science and Technology
-version: paper-v6-artifacts-20261027
-date-released: 2026-10-27
-abstract: "Companion supplement, implementation, figures, experimental records and verification evidence for manuscript V6. This date identifies artifact assembly, not article publication."
+    affiliation: "Jiangsu University of Science and Technology"
+version: paper-artifacts-20261028
+date-released: 2026-10-28
+repository-code: "https://github.com/freakchan1212/lazer-credential-artifacts"
+abstract: "Supplementary materials, implementation source code, figures, experimental data, and verification evidence accompanying the associated article."

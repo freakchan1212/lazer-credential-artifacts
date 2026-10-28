@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Redraw the eight V6 figures without changing frozen figures or raw data."""
+"""Redraw the eight figures without changing frozen figures or raw data."""
 from pathlib import Path
 import argparse, tempfile, shutil, subprocess, sys, os
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,4 +13,4 @@ with tempfile.TemporaryDirectory() as td:
  names={'fig4_ols_and_block_effects':'图S1_回归与分块效果','fig5_latency_ecdf':'图S2_耗时经验分布','fig6_reuse_amortization':'图S3_完整服务摊销'}
  for old,new in names.items():
   for ext in ['svg','png']:shutil.copy2(stage/'figures/zh'/ext/(old+'.'+ext),out/ext.upper()/(new+'.'+ext))
-print('V6: 8 figures, SVG + PNG; generated outputs: '+str(out))
+print('8 figures, SVG + PNG; generated outputs: '+str(out))

@@ -1,11 +1,11 @@
 # LaZer 匿名凭证实现优化：代码与补充材料
 
-对应论文《面向重复出示与选择性披露的LaZer匿名凭证实现优化》。本仓库把补充材料、源码、数据、图和验证证据集中到同一个入口，供读者阅读与复核。当前对应正文 V6；正式发表后请在本页补充论文的正式书目信息和 DOI。
+对应论文《面向重复出示与选择性披露的LaZer匿名凭证实现优化》。本仓库把补充材料、源码、数据、图和验证证据集中到同一个入口，供读者阅读与复核。正式发表后请在本页补充论文的正式书目信息和 DOI。
 
 ## 先阅读
 
-- **[补充材料 PDF](supplement/supplement_v6.pdf)**；[可编辑 Word](supplement/supplement_v6.docx)。
-- [对应正文 PDF](paper/manuscript_v6.pdf)；[对应正文 Word](paper/manuscript_v6.docx)。正文为 10 页，补充材料为 11 页；本次整理没有修改两份 Word。
+- **[补充材料 PDF](supplement/supplement.pdf)**；[可编辑 Word](supplement/supplement.docx)。
+- [对应正文 PDF](paper/manuscript.pdf)；[对应正文 Word](paper/manuscript.docx)。正文为 10 页，补充材料为 11 页；本次整理没有修改两份 Word。
 - [中文 SVG](figures/SVG/) 与 [中文 PNG](figures/PNG/)：正文图1—5、补充图S1—S3共8图。正文图4为完整服务摊销曲线；图S3为同数据的大尺寸展示。
 - [复现代码](code/source/)；[代码运行说明](code/README_代码复现.md)。
 - [原始实验记录](data/raw/)、[绘图统计表](data/derived/)、[原有独立统计](data/independent_checks/)。
@@ -30,7 +30,7 @@
 
 ```bash
 python3 tools/verify_artifacts.py
-python3 tools/recompute_statistics.py --output ../v6_statistics_recomputed
+python3 tools/recompute_statistics.py --output ../statistics_recomputed
 ```
 
 第一条检查交付文件哈希、406项原始任务回执、图与Word嵌图对应。第二条从原始记录独立重算主统计、配对块和分层Bootstrap；输出到仓库外，不改写冻结数据。
@@ -39,7 +39,7 @@ python3 tools/recompute_statistics.py --output ../v6_statistics_recomputed
 
 ```bash
 export LAZER_CJK_FONT=/path/to/Chinese-font.otf
-python3 tools/redraw_figures.py --output ../v6_figures_redrawn
+python3 tools/redraw_figures.py --output ../figures_redrawn
 ```
 
 该入口输出当前8图的 SVG 和 PNG；不同字体或软件版本可导致像素与文件哈希变化。图1/2/3/5的绘图数值来自当前稿件已报告值，图4及补充图使用随附统计表；独立统计程序用于核对原始记录。
@@ -59,4 +59,20 @@ python3 code/source/run_e4.py --mode smoke --cpu 0 --no-plots
 
 ## 引用和版本
 
-`CITATION.cff` 记录作者与本次材料整理版本，不表示论文已经录用。本次材料标签建议为 `paper-v6-artifacts-20261027`。论文对应版本应发布为 GitHub Release 并保留，不随日后修改移动该标签；正文链接宜指向这一固定发布页。[发布和论文引用说明](docs/GitHub发布与论文引用.md) 给出操作步骤。第三方许可和自有内容授权状态见 [LICENSES.md](LICENSES.md)。
+仓库：https://github.com/freakchan1212/lazer-credential-artifacts
+
+本次整理拟发布标签为 `paper-artifacts-20261028`，引用元数据见 `CITATION.cff`。新版本的 Zenodo DOI 待发布归档后确认；本文件不预填未知 DOI。
+
+首次归档版本 `paper-artifacts-20261027` 的 DOI 为 https://doi.org/10.5281/zenodo.23719548 。该 DOI 对应首次归档文件快照，不随 GitHub 后续修改自动更新。论文应引用与实际提交材料相对应的具体版本。
+
+[访问与引用说明](docs/GitHub发布与论文引用.md) 给出版本关系；[本次整理核查](docs/整理核查报告.md) 记录修改范围和验证结果。第三方许可及自有内容授权状态见 [LICENSES.md](LICENSES.md)。正式发表后可补充论文的书目信息和论文 DOI。
+
+## Windows 的检查方式
+
+完整性检查仅使用 Python 标准库。在仓库根目录执行 `python -X utf8 tools/verify_artifacts.py`；命令启动后应显示 `PASSED` 和检查数量。应先确认 Python 解释器可用，安装 GitHub Desktop 并不等于安装了 Python。统计和绘图另需 `requirements-analysis.txt` 中的依赖；原生密码实现的完整复现环境仍以 Ubuntu 说明为准。
+
+本仓库使用 `.gitattributes` 保留原文件字节，避免跨系统换行转换影响 SHA256。修改文件后应先复核变更范围再更新根目录清单，不能通过重写清单掩盖意外的实验材料改动。
+
+## 使用 GitHub Desktop 完整上传
+
+上游忽略规则会跳过部分已随包提供的头文件与第三方源码。复制整理包到已有本地仓库后，双击根目录 `stage_frozen_files.cmd`；辅助脚本先用PowerShell核对清单文件的SHA256，再将清单中的全部文件加入Git暂存区（包括被忽略的必要文件）。不需Python，不提交、不推送、不发布；之后在GitHub Desktop检查并提交。不要仅凭网页目录存在判断材料完整。该入口保留上游忽略规则及原源码不变，使用本机Git或GitHub Desktop内附Git。

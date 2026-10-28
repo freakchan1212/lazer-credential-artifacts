@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-28",
+  "planned_release": "paper-artifacts-20261028",
+  "original_protected_files_unchanged": 1621,
+  "renamed_documents_unchanged": 4,
+  "relative_links_checked": "PASSED",
+  "citation_structure": "PASSED",
+  "changed_files_vs_original": {
+    ".gitattributes": "added",
+    "CITATION.cff": "modified",
+    "README.md": "modified",
+    "docs/GitHub发布与论文引用.md": "modified",
+    "docs/整理核查报告.md": "modified",
+    "figures/README.md": "modified",
+    "paper/manuscript.docx": "added",
+    "paper/manuscript.pdf": "added",
+    "provenance/README.md": "modified",
+    "provenance/initial_delivery_report.md": "added",
+    "supplement/supplement.docx": "added",
+    "supplement/supplement.pdf": "added",
+    "tools/redraw_figures.py": "modified",
+    "tools/verify_artifacts.py": "modified"
+  },
+  "native_benchmarks_rerun": false,
+  "independent_statistics_match": true,
+  "raw_jobs": 406,
+  "main_timing_rows": 7200,
+  "main_png_matches": 5,
+  "supplement_png_matches": 3,
+  "vector_svg_files": 8
+}
