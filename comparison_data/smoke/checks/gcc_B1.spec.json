@@ -1,0 +1,8 @@
+{
+  "task": "subsets",
+  "variant": "B1",
+  "all_subsets": false,
+  "formal": false,
+  "verification_mode": "strict",
+  "seed": 20261030
+}

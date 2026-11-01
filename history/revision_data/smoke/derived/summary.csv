@@ -1,0 +1,15 @@
+compiler,variant,lifecycle,n,prove_ms_mean,verify_ms_mean,show_ms_mean,proof_bytes_mean,K_mean,show_ms_median,show_ms_p95,process_peak_rss_MiB,comparison_scope
+clang,B1,fresh,2,50.984616,32.4246385,83.4092545,29111.5,1.5,83.4092545,86.297214,80.23828125,within-LaZer same task/parameters except compact dimensions
+clang,B1,steady,2,48.068418,30.0424935,78.1109115,29116,1.5,78.1109115,81.514388,67.94921875,within-LaZer same task/parameters except compact dimensions
+clang,C3,fresh,2,51.850129499999994,25.263722,77.1138515,28487,4,77.1138515,87.036079,83.57421875,within-LaZer same task/parameters except compact dimensions
+clang,C3,steady,2,40.8660685,18.742967,59.6090355,28492.5,3.5,59.6090355,71.530124,67.70703125,within-LaZer same task/parameters except compact dimensions
+clang,G3,fresh,2,55.500429999999994,26.494527,81.994957,29114,4.5,81.994957,94.660037,84.87890625,within-LaZer same task/parameters except compact dimensions
+clang,G3,steady,2,42.879516,19.668612,62.548128,29103.5,3.5,62.548128,69.382323,69.68359375,within-LaZer same task/parameters except compact dimensions
+clang,PQZK_BLNS,fresh,2,96.70913949981335,64.69159650010985,161.40073599992348,89153,2.5,161.40073599992348,168.463711999357,50.08203125,"native configuration reference, not equal-security speedup"
+clang,PQZK_BLNS,steady,2,91.29418900003655,66.01631950028245,157.310508500319,89153,2,157.310508500319,159.500904999673,50.08203125,"native configuration reference, not equal-security speedup"
+gcc,B1,fresh,2,65.829485,35.204567,101.034052,29122.5,4,101.034052,117.422823,80.5,within-LaZer same task/parameters except compact dimensions
+gcc,B1,steady,2,54.234352,32.492668,86.72702000000001,29107.5,2.5,86.72702000000001,94.250101,67.8359375,within-LaZer same task/parameters except compact dimensions
+gcc,C3,fresh,2,72.862393,26.0196335,98.8820265,28506,9.5,98.8820265,117.366924,83.58203125,within-LaZer same task/parameters except compact dimensions
+gcc,C3,steady,2,32.499816,18.33757,50.837385999999995,28499.5,2,50.837385999999995,56.373815,67.58984375,within-LaZer same task/parameters except compact dimensions
+gcc,G3,fresh,2,64.5933625,26.885907500000002,91.47927,29121,7.5,91.47927,106.238161,84.6484375,within-LaZer same task/parameters except compact dimensions
+gcc,G3,steady,2,59.657064500000004,19.4011115,79.058176,29105.5,8,79.058176,105.490317,69.5703125,within-LaZer same task/parameters except compact dimensions

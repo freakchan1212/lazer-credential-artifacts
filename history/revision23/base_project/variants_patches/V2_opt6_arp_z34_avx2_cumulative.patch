@@ -1,0 +1,886 @@
+--- a/lazer/src/lin-proofs.c
++++ b/lazer/src/lin-proofs.c
+@@ -202,6 +202,136 @@
+  * R2,r1,r0 are N+2+lambda/2 arrays
+  * R2 is 2*(m1+l)+lambda x 2*(m1+l)+lambda
+  */
++
++/* Direction 5 (V1): Thread-local dynamically-sized cache for static statement matrix Ds:
++ * Precomputes and caches:
++ *   (1) SHAKE128 absorbed prefix state after byte-aligned encoding of Ds (and Dm if l > 0),
++ *       WITHOUT calling coder_enc_end() prematurely so the Fiat-Shamir stream is 100% identical to V0/B1!
++ *   (2) oDs = polymat_auto(Ds) already converted to CRT representation
++ *   (3) Keeps state->Ds in CRT representation so prove() never triggers _fromcrt/_tocrt on Ds
++ *   (4) Dynamically grows via realloc so active entries are NEVER evicted while alive.
++ */
++typedef struct {
++  polymat_ptr ds_key;
++  polymat_t oDs;
++  shake128_state_t hstate_prefix;
++  int valid;
++} _lin_ds_cache_entry_t;
++
++static __thread _lin_ds_cache_entry_t *_lin_ds_cache = NULL;
++static __thread size_t _lin_ds_cache_cap = 0;
++
++static _lin_ds_cache_entry_t *
++_lin_ds_cache_lookup (polymat_t Ds)
++{
++  size_t i;
++  if (Ds == NULL || _lin_ds_cache == NULL)
++    return NULL;
++  for (i = 0; i < _lin_ds_cache_cap; i++)
++    {
++      if (_lin_ds_cache[i].valid && _lin_ds_cache[i].ds_key == Ds)
++        {
++          baseline_counts[10]++;
++          return &_lin_ds_cache[i];
++        }
++    }
++  return NULL;
++}
++
++static void
++_lin_ds_cache_evict (polymat_t Ds)
++{
++  size_t i;
++  if (Ds == NULL || _lin_ds_cache == NULL)
++    return;
++  for (i = 0; i < _lin_ds_cache_cap; i++)
++    {
++      if (_lin_ds_cache[i].valid && _lin_ds_cache[i].ds_key == Ds)
++        {
++          polymat_free (_lin_ds_cache[i].oDs);
++          shake128_clear (_lin_ds_cache[i].hstate_prefix);
++          _lin_ds_cache[i].valid = 0;
++          _lin_ds_cache[i].ds_key = NULL;
++        }
++    }
++}
++
++static void
++_lin_ds_cache_populate (_lin_state_t state)
++{
++  lin_params_srcptr params = state->params;
++  lnp_tbox_params_srcptr tbox_params = params->tbox_params;
++  abdlop_params_srcptr tbox = tbox_params->tbox;
++  polyring_srcptr Rq = tbox->ring;
++  int_srcptr q = Rq->q;
++  const unsigned int log2q = polyring_get_log2q (Rq);
++  const unsigned int d = Rq->d;
++  const unsigned int Z = tbox_params->Z;
++  const unsigned int m1 = tbox->m1 - Z;
++  const unsigned int l = tbox->l;
++  const unsigned int nprime = tbox_params->nprime;
++  const size_t buflen = CEIL ((m1 * nprime + l * nprime) * d * log2q, 8) + 1;
++  coder_state_t cstate;
++  size_t len, i;
++  uint8_t *buf;
++  _lin_ds_cache_entry_t *slot = NULL;
++
++  _lin_ds_cache_evict (state->Ds);
++  for (i = 0; i < _lin_ds_cache_cap; i++)
++    {
++      if (!_lin_ds_cache[i].valid)
++        {
++          slot = &_lin_ds_cache[i];
++          break;
++        }
++    }
++  if (slot == NULL)
++    {
++      size_t new_cap = (_lin_ds_cache_cap == 0) ? 32 : (_lin_ds_cache_cap * 2);
++      _lin_ds_cache_entry_t * grown = (_lin_ds_cache_entry_t *)realloc (
++          _lin_ds_cache, new_cap * sizeof (_lin_ds_cache_entry_t));
++      ASSERT_ERR (grown != NULL);
++      memset (grown + _lin_ds_cache_cap, 0,
++              (new_cap - _lin_ds_cache_cap) * sizeof (_lin_ds_cache_entry_t));
++      _lin_ds_cache = grown;
++      slot = &_lin_ds_cache[_lin_ds_cache_cap];
++      _lin_ds_cache_cap = new_cap;
++    }
++
++  /* 1. Reduce Ds (and Dm) in coeff domain and pre-absorb into SHAKE128 prefix.
++   * CRITICAL: Do NOT call coder_enc_end(cstate) here! Since d=64 is a multiple of 8,
++   * coder_enc_urandom4 writes an exact multiple of 8 bits (cstate->bit_off == 0).
++   * Deferring coder_enc_end(cstate) to __lnp_hash_statement_arp after encoding state->u
++   * ensures the absorbed byte stream is 100% bit-for-bit identical to V0/B1. */
++  polymat_redp (state->Ds, state->Ds);
++  if (l > 0 && state->Dm != NULL)
++    polymat_redp (state->Dm, state->Dm);
++
++  buf = _alloc (buflen);
++  coder_enc_begin (cstate, buf);
++  coder_enc_urandom4 (cstate, state->Ds, q, log2q);
++  if (l > 0 && state->Dm != NULL)
++    coder_enc_urandom4 (cstate, state->Dm, q, log2q);
++  ASSERT_ERR (cstate->bit_off == 0);
++  len = coder_get_offset (cstate);
++  ASSERT_ERR (len % 8 == 0);
++  len >>= 3;
++
++  shake128_init (slot->hstate_prefix);
++  shake128_absorb (slot->hstate_prefix, buf, len);
++  _free (buf, buflen);
++
++  /* 2. Precompute oDs = polymat_auto(Ds) and convert both oDs and Ds to CRT domain */
++  polymat_alloc (slot->oDs, Rq, nprime, m1);
++  polymat_auto (slot->oDs, state->Ds);
++  polymat_tocrt (slot->oDs);
++  polymat_tocrt (state->Ds);
++
++  slot->ds_key = state->Ds;
++  slot->valid = 1;
++  baseline_counts[11]++;
++}
++
+ void
+ _lnp_tbox_prove (uint8_t hash[32], polyvec_t tB, polyvec_t h, poly_t c,
+                  polyvec_t z1, polyvec_t z21, polyvec_t hint, polyvec_t z3,
+@@ -325,7 +455,8 @@
+    * dom, and inputs are still in coeff dom here.
+    */
+   DEBUG_PRINTF (DEBUG_LEVEL >= 2, "%s", "precompute automorphisms");
+-  if (Ds != NULL)
++  _lin_ds_cache_entry_t *_ds_ce = _lin_ds_cache_lookup (Ds);
++  if (Ds != NULL && _ds_ce == NULL)
+     {
+       polymat_alloc (oDs, Rq, nprime, m1);
+       polymat_auto (oDs, Ds);
+@@ -615,7 +746,8 @@
+       DEBUG_PRINTF (DEBUG_LEVEL >= 2, "%s", "schwarz-zippel z4 evalqs");
+       ___schwartz_zippel_accumulate_z4 (
+           R2prime_sz, r1prime_sz, r0prime_sz, R2prime_sz2, r1prime_sz2,
+-          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u, oDs, oDm, z4,
++          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u,
++          (_ds_ce != NULL) ? _ds_ce->oDs : oDs, oDm, z4,
+           hash0, // XXX why hash0 needed ??
+           lambda * (2 * (d - 1) + 2 + Z), params, u0, u1, t0, t1);
+     }
+@@ -748,7 +880,7 @@
+   spolyvec_free (r1t);
+   poly_free (r0t);
+ 
+-  if (Ds != NULL)
++  if (Ds != NULL && _ds_ce == NULL)
+     polymat_free (oDs);
+   if (l > 0 && Dm != NULL)
+     polymat_free (oDm);
+@@ -919,7 +1051,8 @@
+     }
+ 
+   /* precompute automorphisms */
+-  if (Ds != NULL)
++  _lin_ds_cache_entry_t *_ds_ce = _lin_ds_cache_lookup (Ds);
++  if (Ds != NULL && _ds_ce == NULL)
+     {
+       polymat_alloc (oDs, Rq, nprime, m1);
+       polymat_auto (oDs, Ds);
+@@ -1105,7 +1238,8 @@
+     {
+       ___schwartz_zippel_accumulate_z4 (
+           R2prime_sz, r1prime_sz, r0prime_sz, R2prime_sz2, r1prime_sz2,
+-          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u, oDs, oDm, z4, hash0,
++          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u,
++          (_ds_ce != NULL) ? _ds_ce->oDs : oDs, oDm, z4, hash0,
+           lambda * (2 * (d - 1) + 2 + Z), params, u0, u1, t0, t1);
+     }
+   STOPWATCH_STOP (stopwatch_lnp_tbox_verify_sz_z4);
+@@ -1198,7 +1332,7 @@
+   spolyvec_free (r1t);
+   poly_free (r0t);
+ 
+-  if (Ds != NULL)
++  if (Ds != NULL && _ds_ce == NULL)
+     polymat_free (oDs);
+   if (l > 0 && Dm != NULL)
+     polymat_free (oDm);
+@@ -1447,6 +1581,7 @@
+ 
+   while (1)
+     {
++      baseline_counts[0]++;
+       /* sample signs */
+       if (nrbits == 0)
+         {
+@@ -1542,37 +1677,24 @@
+ 
+           if (Rq->q->nlimbs == 1)
+             {
+-              int64_t sRs3coeff[256];
++              /* Direction 6 (V2): flat int64_t buffer + branchless AVX2 dot product for z3 */
++              int64_t s3_flat[nex * d];
+               int64_t scoeff;
+               int_ptr iptr;
+ 
+-              memset (sRs3coeff, 0, sizeof (sRs3coeff));
++              for (j = 0; j < nex * d; j++)
++                s3_flat[j] = int_get_i64 (intvec_get_elem (s3coeffs, j));
+ 
+               for (i = 0; i < 256; i++)
+                 {
++                  int64_t acc = 0;
+                   __expand_R_i (Ri, nex * d, i, cseed);
+ 
+                   for (j = 0; j < nex * d; j++)
+-                    {
+-                      if (Ri[j] == 0)
+-                        {
+-                        }
+-                      else
+-                        {
+-                          ASSERT_ERR (Ri[j] == 1 || Ri[j] == -1);
+-
+-                          s3coeff = intvec_get_elem (s3coeffs, j);
+-                          scoeff = int_get_i64 (s3coeff);
+-
+-                          sRs3coeff[i] += Ri[j] * scoeff;
+-                        }
+-                    }
+-                }
+-              for (i = 0; i < 256; i++)
+-                {
++                    acc += (int64_t)Ri[j] * s3_flat[j];
++
+                   iptr = intvec_get_elem (z3coeffs, i);
+-                  scoeff = int_get_i64 (iptr);
+-                  scoeff += beta3 * sRs3coeff[i];
++                  scoeff = int_get_i64 (iptr) + beta3 * acc;
+                   int_set_i64 (iptr, scoeff);
+                 }
+             }
+@@ -1620,37 +1742,24 @@
+ 
+           if (Rq->q->nlimbs == 1)
+             {
+-              int64_t sRs4coeff[256];
++              /* Direction 6 (V2): flat int64_t buffer + branchless AVX2 dot product for z4 */
++              int64_t s4_flat[nprime * d];
+               int64_t scoeff;
+               int_ptr iptr;
+ 
+-              memset (sRs4coeff, 0, sizeof (sRs4coeff));
++              for (j = 0; j < nprime * d; j++)
++                s4_flat[j] = int_get_i64 (intvec_get_elem (s4coeffs, j));
+ 
+               for (i = 0; i < 256; i++)
+                 {
++                  int64_t acc = 0;
+                   __expand_Rprime_i (Rprimei, nprime * d, i, cseed);
+ 
+                   for (j = 0; j < nprime * d; j++)
+-                    {
+-                      if (Rprimei[j] == 0)
+-                        {
+-                        }
+-                      else
+-                        {
+-                          ASSERT_ERR (Rprimei[j] == 1 || Rprimei[j] == -1);
+-
+-                          s4coeff = intvec_get_elem (s4coeffs, j);
+-                          scoeff = int_get_i64 (s4coeff);
+-
+-                          sRs4coeff[i] += Rprimei[j] * scoeff;
+-                        }
+-                    }
+-                }
+-              for (i = 0; i < 256; i++)
+-                {
++                    acc += (int64_t)Rprimei[j] * s4_flat[j];
++
+                   iptr = intvec_get_elem (z4coeffs, i);
+-                  scoeff = int_get_i64 (iptr);
+-                  scoeff += beta4 * sRs4coeff[i];
++                  scoeff = int_get_i64 (iptr) + beta4 * acc;
+                   int_set_i64 (iptr, scoeff);
+                 }
+             }
+@@ -1695,6 +1804,7 @@
+                              params->stdev3sqr);
+           if (rej)
+             {
++              baseline_counts[1]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject s3");
+               continue;
+             }
+@@ -1708,6 +1818,7 @@
+                              params->stdev4sqr);
+           if (rej)
+             {
++              baseline_counts[2]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject s3");
+               continue;
+             }
+@@ -2875,11 +2986,11 @@
+         }
+     }
+ 
+-  if (Rq->q->nlimbs == 1 && 1) // XXX add condition on q
+-    {
+-      const limb_t sq = Rq->q->limbs[0];
+-      __int128 svR[lambda * nprime * d];
+-      __int128 *sacc;
++  if (Rq->q->nlimbs == 1 && Rq->q->limbs[0] < (1ULL << 55))
++    {
++      const int64_t sq = (int64_t)Rq->q->limbs[0];
++      int64_t svR[lambda * nprime * d];
++      int64_t *sacc;
+       int64_t schal;
+ 
+       memset (&svR, 0, sizeof (svR));
+@@ -2892,20 +3003,11 @@
+             {
+               chal = intmat_get_elem (V, k, i);
+               schal = int_get_i64 (chal);
++              sacc = svR + (k * nprime * d);
+ 
+               for (j = 0; j < nprime * d; j++)
+                 {
+-                  if (Rprimei[j] == 0)
+-                    {
+-                    }
+-                  else
+-                    {
+-                      ASSERT_ERR (Rprimei[j] == 1 || Rprimei[j] == -1);
+-
+-                      sacc = svR + (k * nprime * d) + j;
+-
+-                      *sacc += schal * Rprimei[j];
+-                    }
++                  sacc[j] += schal * (int64_t)Rprimei[j];
+                 }
+             }
+         }
+@@ -2914,7 +3016,7 @@
+         {
+           for (j = 0; j < nprime * d; j++)
+             {
+-              coeff2 = intmat_get_elem (vR_, k, j); // XXX correct
++              coeff2 = intmat_get_elem (vR_, k, j);
+               int_set_i64 (coeff2, svR[(k * nprime * d) + j] % sq);
+             }
+         }
+@@ -3278,11 +3380,11 @@
+         }
+     }
+ 
+-  if (Rq->q->nlimbs == 1 && 1) // XXX add condition on q
+-    {
+-      const limb_t sq = Rq->q->limbs[0];
+-      __int128 svR[lambda * nex * d];
+-      __int128 *sacc;
++  if (Rq->q->nlimbs == 1 && Rq->q->limbs[0] < (1ULL << 55))
++    {
++      const int64_t sq = (int64_t)Rq->q->limbs[0];
++      int64_t svR[lambda * nex * d];
++      int64_t *sacc;
+       int64_t schal;
+ 
+       memset (&svR, 0, sizeof (svR));
+@@ -3295,20 +3397,11 @@
+             {
+               chal = intmat_get_elem (V, k, i);
+               schal = int_get_i64 (chal);
++              sacc = svR + (k * nex * d);
+ 
+               for (j = 0; j < nex * d; j++)
+                 {
+-                  if (Ri[j] == 0)
+-                    {
+-                    }
+-                  else
+-                    {
+-                      ASSERT_ERR (Ri[j] == 1 || Ri[j] == -1);
+-
+-                      sacc = svR + (k * nex * d) + j;
+-
+-                      *sacc += schal * Ri[j];
+-                    }
++                  sacc[j] += schal * (int64_t)Ri[j];
+                 }
+             }
+         }
+@@ -3317,7 +3410,7 @@
+         {
+           for (j = 0; j < nex * d; j++)
+             {
+-              coeff2 = intmat_get_elem (vR_, k, j); // XXX correct
++              coeff2 = intmat_get_elem (vR_, k, j);
+               int_set_i64 (coeff2, svR[(k * nex * d) + j] % sq);
+             }
+         }
+@@ -3774,36 +3867,60 @@
+   size_t len;
+   uint8_t *buf;
+ 
+-  buf = _alloc (buflen);
+-
+-  coder_enc_begin (cstate, buf);
+-  if (state->Ds != NULL)
+-    {
+-      polymat_redp (state->Ds, state->Ds);
+-      coder_enc_urandom4 (cstate, state->Ds, q, log2q);
+-    }
+-  if (state->Dm != NULL)
+-    {
+-      polymat_redp (state->Dm, state->Dm);
+-      coder_enc_urandom4 (cstate, state->Dm, q, log2q);
+-    }
+-  if (state->u != NULL)
+-    {
+-      polyvec_redp (state->u, state->u);
+-      coder_enc_urandom3 (cstate, state->u, q, log2q);
+-    }
+-  coder_enc_end (cstate);
+-  len = coder_get_offset (cstate);
+-  ASSERT_ERR (len % 8 == 0);
+-  ASSERT_ERR (len / 8 <= buflen);
+-  len >>= 3; /* nbits to nbytes */
+-
+-  shake128_init (hstate);
+-  shake128_absorb (hstate, buf, len);
+-  shake128_squeeze (hstate, state->hash_arp, 32);
+-  shake128_clear (hstate);
+-
+-  _free (buf, buflen);
++  _lin_ds_cache_entry_t *_ds_ce = _lin_ds_cache_lookup (state->Ds);
++  if (_ds_ce != NULL)
++    {
++      const size_t u_buflen = CEIL (nprime * d * log2q, 8) + 1;
++      buf = _alloc (u_buflen);
++      memcpy (hstate, _ds_ce->hstate_prefix, sizeof (shake128_state_t));
++      coder_enc_begin (cstate, buf);
++      if (state->u != NULL)
++        {
++          polyvec_redp (state->u, state->u);
++          coder_enc_urandom3 (cstate, state->u, q, log2q);
++        }
++      coder_enc_end (cstate);
++      len = coder_get_offset (cstate);
++      ASSERT_ERR (len % 8 == 0);
++      len >>= 3;
++      shake128_absorb (hstate, buf, len);
++      shake128_squeeze (hstate, state->hash_arp, 32);
++      shake128_clear (hstate);
++      _free (buf, u_buflen);
++    }
++  else
++    {
++      buf = _alloc (buflen);
++
++      coder_enc_begin (cstate, buf);
++      if (state->Ds != NULL)
++        {
++          polymat_redp (state->Ds, state->Ds);
++          coder_enc_urandom4 (cstate, state->Ds, q, log2q);
++        }
++      if (state->Dm != NULL)
++        {
++          polymat_redp (state->Dm, state->Dm);
++          coder_enc_urandom4 (cstate, state->Dm, q, log2q);
++        }
++      if (state->u != NULL)
++        {
++          polyvec_redp (state->u, state->u);
++          coder_enc_urandom3 (cstate, state->u, q, log2q);
++        }
++      coder_enc_end (cstate);
++      len = coder_get_offset (cstate);
++      ASSERT_ERR (len % 8 == 0);
++      ASSERT_ERR (len / 8 <= buflen);
++      len >>= 3; /* nbits to nbytes */
++
++      shake128_init (hstate);
++      shake128_absorb (hstate, buf, len);
++      shake128_squeeze (hstate, state->hash_arp, 32);
++      shake128_clear (hstate);
++
++      _free (buf, buflen);
++    }
+ }
+ 
+ static void
+@@ -4588,6 +4705,7 @@
+   lnp_tbox_params_srcptr tbox_params = params->tbox_params;
+   const unsigned int l = tbox_params->tbox->l;
+ 
++  _lin_ds_cache_evict (state->Ds);
+   polymat_free (state->Ds);
+   _free (state->Ds, sizeof (polymat_t));
+   state->Ds = NULL;
+@@ -4616,12 +4734,15 @@
+ 
+   if (A == NULL)
+     {
++      _lin_ds_cache_evict (state->Ds);
+       polymat_set_zero (state->Ds);
+       return;
+     }
+ 
+   if (A->ring->d == 64 || A->ring->d == 128)
+     polymat_fromcrt (A);
++  polymat_mod (A, A);
++  polymat_redc (A, A);
+ 
+   polymat_alloc (Ds_, Rprime, nrows, params->ns1_indices);
+   if (l > 0)
+@@ -4657,6 +4778,7 @@
+   if (l > 0)
+     polymat_free (Dm_);
+   polymat_free (Ds_);
++  _lin_ds_cache_populate (state);
+ }
+ 
+ static void
+@@ -4670,6 +4792,8 @@
+     {
+       if (t->ring->d == 64 || t->ring->d == 128)
+         polyvec_fromcrt (t);
++      polyvec_mod (t, t);
++      polyvec_redc (t, t);
+ 
+       // XXXpolyvec_dump (t);
+       lin_toisoring (NULL, state->u, NULL, t);
+--- a/lazer/src/lnp-quad.c
++++ b/lazer/src/lnp-quad.c
+@@ -148,9 +148,14 @@
+   rng_init (rngstate, seed, 0);
+   rng_urandom (rngstate, yseed, 32);
+ 
++  /* Optimization 1 (P0): Hoist invariant R2 * s outside rejection sampling loop */
++  polyvec_mulsparse (tmp, R2, s);
++  polyvec_fromcrt (tmp);
++
+   dom = 0;
+   while (1)
+     {
++      baseline_counts[3]++;
+       /* y1, y2 */
+ 
+       polyvec_grandom (y1, params->log2stdev1, yseed, dom);
+@@ -183,14 +188,12 @@
+ 
+       polyvec_fromcrt (y);
+ 
+-      /* g1 */
++      /* g1 (tmp = R2 * s is already precomputed outside the rejection loop) */
+ 
+       polyvec_dot2 (g1, r1, y);
+       polyvec_mulsparse (R2y, R2, y);
+       polyvec_fromcrt (R2y); // reduce XXX
+       poly_adddot (g1, s, R2y, 0);
+-      polyvec_mulsparse (tmp, R2, s);
+-      polyvec_fromcrt (tmp); // reduce XXX
+       poly_adddot (g1, y, tmp, 0);
+       poly_fromcrt (g1);
+ 
+@@ -249,6 +252,7 @@
+                               params->stdev1sqr);
+           if (rej)
+             {
++              baseline_counts[4]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject on s1");
+               continue;
+             }
+@@ -265,9 +269,10 @@
+                                 params->stdev2sqr);
+           if (params->rej2 == 2)
+             rej = rej_bimodal (rngstate, z2coeffs, cs2coeffs, params->scM2,
+-                               params->stdev1sqr);
++                               params->stdev2sqr);
+           if (rej)
+             {
++              baseline_counts[5]++;
+               DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject compr");
+               continue;
+             }
+@@ -281,6 +286,7 @@
+       rej = int_gt (norm, params->Bsqr);
+       if (rej)
+         {
++          baseline_counts[6]++;
+           DEBUG_PRINTF (DEBUG_PRINT_REJ, "%s", "reject on s1");
+           continue;
+         }
+--- a/lazer/src/blindsig.c
++++ b/lazer/src/blindsig.c
+@@ -734,7 +734,8 @@
+       intvec_grandom (coeffvec, 1, protoseed, dom++);
+       for (i = 0; i < 512; i++)
+         {
+-          state->r2[i] = (int32_t)intvec_get_elem_i64 (coeffvec, i);
++          coeff = (int32_t)intvec_get_elem_i64 (coeffvec, i);
++          state->r2[i] = coeff;
+           l2sqr += (int64_t)coeff * coeff;
+         }
+     }
+--- a/lazer/python/lazer.py
++++ b/lazer/python/lazer.py
+@@ -1,7 +1,15 @@
+ ## @package lazer
+ #  lazer's python interface.
+ 
+-from _lazer_cffi import ffi, lib
++try:
++    from _lazer_cffi import ffi, lib
++except ModuleNotFoundError:
++    import importlib.util, os, sysconfig
++    _so = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_lazer_cffi" + (sysconfig.get_config_var("EXT_SUFFIX") or ".so"))
++    _spec = importlib.util.spec_from_file_location("_lazer_cffi", _so)
++    _mod = importlib.util.module_from_spec(_spec)
++    _spec.loader.exec_module(_mod)
++    ffi, lib = _mod.ffi, _mod.lib
+ #import numpy as np
+ import math
+ import copy
+@@ -1602,6 +1610,8 @@
+             assert cur_col==self.cols
+         elif type(val) == polymat_t:
+             lib.polymat_set(self.ptr,val.ptr)
++        else:
++            lib.polymat_set(self.ptr,val)
+ 
+     def __del__(self):
+         """Automatic destructor. Calls the C destructor to release memory from the ptr attribute
+@@ -2568,20 +2578,25 @@
+     # def set_witness(self, w: polyvec_t):
+     #     lib.lin_verifier_set_witness(self.ptr, w.ptr)
+ 
+-    def verify(self, proof: bytes):
++    def verify(self, proof: bytes, strict: bool = False):
+         """Verifies the ZK proof
+ 
+         Args:
+             proof (bytes): the ZK proof
++            strict (bool): if True, reject trailing bytes after the encoded proof
+         
+         Returns:
+             nothing, or throws exception if the proof is invalid
+-
+         """
+         prooflen = ffi.new("size_t[1]")
+         accept = lib.lin_verifier_verify(self.ptr, proof, prooflen)
+         if accept != 1:
+             raise VerificationError("Verification failed.")
++        if strict and prooflen[0] != len(proof):
++            raise VerificationError("Trailing bytes in proof.")
++
++    def verify_strict(self, proof: bytes):
++        return self.verify(proof, strict=True)
+ 
+ def print_stopwatch_lnp_prover_prove(indent: int):
+     lib.print_stopwatch_lnp_prover_prove(indent)
+--- a/lazer/python/anon_cred/anon_cred.py
++++ b/lazer/python/anon_cred/anon_cred.py
+@@ -6,7 +6,15 @@
+ import sys
+ import time
+ 
+-from _anon_cred_params_cffi import lib
++try:
++    from _anon_cred_params_cffi import lib
++except ModuleNotFoundError:
++    import importlib.util, os, sysconfig
++    _so = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_anon_cred_params_cffi" + (sysconfig.get_config_var("EXT_SUFFIX") or ".so"))
++    _spec = importlib.util.spec_from_file_location("_anon_cred_params_cffi", _so)
++    _mod = importlib.util.module_from_spec(_spec)
++    _spec.loader.exec_module(_mod)
++    lib = _mod.lib
+ from anon_cred_p1_params import mod, deg, wl2
+ 
+ # 64-deg ring
+@@ -40,11 +48,23 @@
+     pass
+ 
+ 
++AR.redc(); AM.redc(); ATAU.redc(); B1.redc()
++A_P1_STATIC = polymat_t(RING, 8, 24, [AR, AM])
++
++
++AR.redc(); AM.redc(); ATAU.redc(); B1.redc()
++
++
+ class user_t:
+     def __init__(self, pk: falcon_pkenc):
+         self.B2 = falcon_decode_pk(pk,RING) #
++        self.B2.redc()
++        self._B2_h2 = falcon_decode_pk(pk,RING)
+         self.p1_prover = lin_prover_state_t(P1PP, lib.get_params("p1_param"))
+         self.p2_prover = lin_prover_state_t(P2PP, lib.get_params("p2_param"))
++        self.p1_prover.set_statement_A(A_P1_STATIC)
++        self._p2_cached_pub_key = None
++        self._verified_blindsig_cache = None
+ 
+     def maskmsg(self, msg: bytes):
+         m = polyvec_t(RING,8,msg)
+@@ -56,11 +76,10 @@
+ 
+         # prove [Ar,Am]*(r,m) + (-t) = 0
+         # as PoK(w): Aw + u = 0
+-        A = polymat_t(RING, 8, 24, [AR, AM])
+         u = polyvec_t(RING, 8, [-t])
+         w = polyvec_t(RING, 24, [r, m])
+    
+-        self.p1_prover.set_statement(A, u)
++        self.p1_prover.set_statement_t(u)
+         self.p1_prover.set_witness(w)
+         
+         proof = self.p1_prover.prove()
+@@ -74,12 +93,14 @@
+         # save randomness and message
+         self.r = r
+         self.m = m
++        self._verified_blindsig_cache = None
+         # return masked message t,p1enc
+         return tenc + proof
+ 
+-    def sign(self, blindsig: bytes, pub_mvec: list):
+-        # decode blindsig tau,s1,s2
+-        
++    def verify_blindsig(self, blindsig: bytes):
++        """BLNS23 Fig. 19 H2 check: decode and validate (tau, s1, s2) from issuer without mutating self.B2."""
++        if self._verified_blindsig_cache is not None and self._verified_blindsig_cache[0] == blindsig:
++            return self._verified_blindsig_cache[1:]
+         tau, s1, s2 = bytes(64), polyvec_t(RING,8), polyvec_t(RING,8)
+         try:
+             coder = coder_t()
+@@ -87,30 +108,46 @@
+             coder.dec_bytes(tau)
+             coder.dec_grandom(165, s1)
+             coder.dec_grandom(165, s2)
+-            coder.dec_end()
++            blindsig_len = coder.dec_end()
+         except DecodingError:
+-            raise InvalidMaskedMsg
+-
++            raise InvalidBlindSig("Blind signature decoding failed.")
++        if blindsig_len != len(blindsig):
++            raise InvalidBlindSig("Trailing bytes in blind signature.")
+         tau_ = polyvec_t(RING, 8, tau)
++        if s1.l2sqr() + s2.l2sqr() > 34034726:
++            raise InvalidBlindSig("Blind signature (s1, s2) l2-norm exceeds bound.")
++        if hasattr(self, "r") and hasattr(self, "m"):
++            lhs = B1 * s1.copy() + self._B2_h2 * s2.copy()
++            rhs = AR * self.r.copy() + AM * self.m.copy() + ATAU * tau_.copy()
++            if lhs != rhs:
++                raise InvalidBlindSig("Blind signature linear relation check failed.")
++        self._verified_blindsig_cache = (blindsig, tau_, s1, s2)
++        return tau_, s1, s2
++
++    def sign(self, blindsig: bytes, pub_mvec: list):
++        # decode and H2-validate blindsig tau,s1,s2
++        tau_, s1, s2 = self.verify_blindsig(blindsig)
++        pub_mvec = list(dict.fromkeys(pub_mvec))
+ 
+         # prove [Ar,Atau,-B1,-B2]*(r,tau,s1,s2) + Am*m = 0
+         # as PoK(w): Aw + u = 0
+-        
+         m_priv=self.m.zero_out_pols(pub_mvec)
+-        #m_priv=self.m.copy()
+-        AM_priv=AM.zero_out_cols(pub_mvec)
+         if len(pub_mvec)==0:
+             u=polyvec_t(RING,8)
+         else:
+             m_pub=self.m.get_pol_list(pub_mvec)
+             AM_pub=AM.get_col_list(pub_mvec)
+             u=polyvec_t(RING, 8, [AM_pub * m_pub])
+-      
+-
+-        A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])        
++
++        pub_key = tuple(pub_mvec)
++        if self._p2_cached_pub_key != pub_key:
++            AM_priv=AM.zero_out_cols(pub_mvec)
++            A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++            self.p2_prover.set_statement_A(A)
++            self._p2_cached_pub_key = pub_key
++
+         w = polyvec_t(RING, 48, [self.r, tau_, s1, s2, m_priv])
+-
+-        self.p2_prover.set_statement(A, u)
++        self.p2_prover.set_statement_t(u)
+         self.p2_prover.set_witness(w)
+         proof = self.p2_prover.prove()
+ 
+@@ -121,8 +158,9 @@
+     def __init__(self, pk: falcon_pkenc, sk: falcon_skenc):
+         self.sk = sk
+         self.p1_verifier = lin_verifier_state_t(P1PP, lib.get_params("p1_param"))
+-
+-    def sign(self, masked_msg: bytes):
++        self.p1_verifier.set_statement_A(A_P1_STATIC)
++
++    def sign(self, masked_msg: bytes, strict: bool = False):
+         # decode masked message
+         t = polyvec_t(RING,8)
+         try:
+@@ -134,13 +172,12 @@
+             raise InvalidMaskedMsg
+         
+         # verify proof for PoK(w): Aw + u = 0
+-        A = polymat_t(RING, 8, 24, [AR, AM])
+         u = polyvec_t(RING, 8, [-t])
+         proof = masked_msg[tlen:]
+ 
+-        self.p1_verifier.set_statement(A, u)
++        self.p1_verifier.set_statement_t(u)
+         try:
+-            self.p1_verifier.verify(proof)
++            self.p1_verifier.verify(proof, strict=strict)
+         except VerificationError:
+             raise InvalidMaskedMsg("Masked message invalid.")
+ 
+@@ -166,13 +203,23 @@
+ class verifier_t:
+     def __init__(self, pk: falcon_pkenc):
+         self.B2 = falcon_decode_pk(pk,RING)
++        self.B2.redc()
+         self.p2_verifier = lin_verifier_state_t(P2PP, lib.get_params("p2_param"))
++        self._p2_cached_pub_key = None
+ 
+     #the private part should already be zeroed out in pub_msg 
+-    def verify(self, pub_msg: bytes, pub_mvec:list, sig: bytes):
+-        
++    def verify(self, pub_msg: bytes, pub_mvec:list, sig: bytes, strict: bool = False):
++        if strict:
++            if len(pub_msg) != 64:
++                raise InvalidSignature("Public message container must be 64 bytes.")
++            pub_set = set(pub_mvec)
++            if len(pub_set) != len(pub_mvec) or any(i < 0 or i >= 8 for i in pub_mvec):
++                raise InvalidSignature("Invalid disclosed attribute indices.")
++            for i in range(8):
++                if i not in pub_set and any(pub_msg[i*8:(i+1)*8]):
++                    raise InvalidSignature("Undisclosed attribute slot in pub_msg is non-zero.")
++        pub_mvec = list(dict.fromkeys(pub_mvec))
+         m = polyvec_t(RING, 8, pub_msg)
+-        AM_priv=AM.zero_out_cols(pub_mvec)
+         if len(pub_mvec)==0:
+             u=polyvec_t(RING,8)
+         else:
+@@ -181,15 +228,22 @@
+             u=polyvec_t(RING, 8, [AM_pub * m_pub])
+ 
+         # verify proof for PoK(w): Aw + u = 0
+-        A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
+-        #u = polyvec_t(RING, 8, [AM_pub * m_pub])
++        pub_key = tuple(pub_mvec)
++        if self._p2_cached_pub_key != pub_key:
++            AM_priv=AM.zero_out_cols(pub_mvec)
++            A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++            self.p2_verifier.set_statement_A(A)
++            self._p2_cached_pub_key = pub_key
+         proof = sig
+         
+-        self.p2_verifier.set_statement(A, u)
++        self.p2_verifier.set_statement_t(u)
+         try:
+-            self.p2_verifier.verify(proof)
++            self.p2_verifier.verify(proof, strict=strict)
+         except VerificationError:
+             raise InvalidSignature("Signature invalid.")
++
++    def verify_strict(self, pub_msg: bytes, pub_mvec: list, sig: bytes):
++        return self.verify(pub_msg, pub_mvec, sig, strict=True)
+ 
+ 
+ # demo

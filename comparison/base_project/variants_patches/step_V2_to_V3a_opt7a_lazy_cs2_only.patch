@@ -1,0 +1,28 @@
+--- V2/lazer/src/lnp-quad.c
++++ V3A/lazer/src/lnp-quad.c
+@@ -235,11 +235,10 @@
+ 
+       poly_urandom_autostable (c, params->omega, params->log2omega, cseed, 0);
+ 
++      /* Direction 7a (V3A/V3): Lazy cs2 evaluation — only compute cs2 = c*s2 and y2 += cs2
++       * AFTER z1 passes rej1 (~56.9% of iterations reject on z1). */
+       polyvec_scale2 (cs1, c, s1);
+-      polyvec_scale2 (cs2, c, s2); // XXX correct
+       polyvec_add (y1, y1, cs1, 0);
+-      polyvec_add (y2, y2, cs2,
+-                   0); // XXX correct, XXX sample sign with bimodal ?
+ 
+       ASSERT_ERR (params->rej1 == 0 || params->rej1 == 1);
+       if (params->rej1)
+@@ -257,6 +256,11 @@
+               continue;
+             }
+         }
++
++      polyvec_scale2 (cs2, c, s2); // XXX correct
++      polyvec_add (y2, y2, cs2,
++                   0); // XXX correct, XXX sample sign with bimodal ?
++
+       ASSERT_ERR (params->rej2 == 0 || params->rej2 == 1 || params->rej2 == 2);
+       if (params->rej2)
+         {

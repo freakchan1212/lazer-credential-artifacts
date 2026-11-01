@@ -1,0 +1,11 @@
+{
+  "status": "PASSED",
+  "formal_samples": 7800,
+  "conditions": 26,
+  "jobs": 390,
+  "samples_per_condition": 300,
+  "summary_groups_checked": 26,
+  "effects_checked": 18,
+  "bootstrap_repetitions": 25000,
+  "strict_same_parameter_security_equivalence_established": false
+}

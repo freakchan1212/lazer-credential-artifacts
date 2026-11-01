@@ -1,0 +1,14 @@
+{
+  "steady": {
+    "blocks": 30,
+    "not_improved": 15,
+    "not_improved_with_higher_K": 15,
+    "K_prove_correlation": 0.9936529427468397
+  },
+  "fresh": {
+    "blocks": 30,
+    "not_improved": 9,
+    "not_improved_with_higher_K": 9,
+    "K_prove_correlation": 0.9959424363004725
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "compiler": "gcc",
+  "variant": "ARGO_NATIVE",
+  "lifecycle": "steady",
+  "task": "main",
+  "round": 1,
+  "block": 5,
+  "sessions": 20,
+  "warmup": 2,
+  "verification_mode": "argo_native",
+  "formal": true,
+  "id": "0105_gcc_ARGO_NATIVE_steady"
+}

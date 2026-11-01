@@ -1,78 +1,107 @@
-# LaZer 匿名凭证实现优化：代码与补充材料
+# LaZer匿名凭证实现优化
 
-对应论文《面向重复出示与选择性披露的LaZer匿名凭证实现优化》。本仓库把补充材料、源码、数据、图和验证证据集中到同一个入口，供读者阅读与复核。正式发表后请在本页补充论文的正式书目信息和 DOI。
+本仓库提供《面向重复出示与选择性披露的LaZer匿名凭证实现优化》的实现代码、补充材料、实验数据、中文图及验证证据。研究对象为LaZer匿名凭证的重复出示与选择性披露，优化包括跨调用状态复用、公开零坐标裁剪及带范围检查的定宽运算。三种主实现均保留原MPFR拒绝判定。
 
-## 先阅读
+材料版本：**2026.11.01**。作者：陈帅，江苏科技大学计算机学院。
 
-- **[补充材料 PDF](supplement/supplement.pdf)**；[可编辑 Word](supplement/supplement.docx)。
-- [对应正文 PDF](paper/manuscript.pdf)；[对应正文 Word](paper/manuscript.docx)。正文为 10 页，补充材料为 11 页；本次整理没有修改两份 Word。
-- [中文 SVG](figures/SVG/) 与 [中文 PNG](figures/PNG/)：正文图1—5、补充图S1—S3共8图。正文图4为完整服务摊销曲线；图S3为同数据的大尺寸展示。
-- [复现代码](code/source/)；[代码运行说明](code/README_代码复现.md)。
-- [原始实验记录](data/raw/)、[绘图统计表](data/derived/)、[原有独立统计](data/independent_checks/)。
-- [完整实验归档和专项验证](evidence/)；[整理核查报告](docs/整理核查报告.md)。
+## 文稿与图
 
-## 原附件如何对应本仓库
+- [论文正文 PDF](paper/manuscript.pdf) · [Word](paper/manuscript.docx)
+- [补充材料 PDF](supplement/supplement.pdf) · [Word](supplement/supplement.docx)
+- [中文矢量图与兼容图](figures/)：正文图1—5、补充图S1—S3，每图提供SVG、PDF及PNG。
+- [实验与比较范围](docs/COMPARISON_SCOPE_ZH.md)
+- [数据来源和历史材料](provenance/README.md)
 
-补充材料中仍使用原附件名称及内部相对路径，阅读时按下表定位。旧附件的源码、原始数据和证据内容保留；本仓库只增加统一导航和独立分析入口。
+补充材料S1—S7给出主实验统计、参数模型、有限回归和复现定位；S8给出同机跨编译器及独立实现的适配配置实测。
 
-| 原文件中的说法 | 本仓库位置 |
-| --- | --- |
-| 附件1根目录及其 `source/`、`regression/` | `code/`、`code/source/`、`code/regression/` |
-| 附件2的 `data/` | `data/` |
-| 附件2的 `plot_sources/` | `analysis/original_attachment2/`（旧7图布局的来源程序） |
-| 附件2中文图 | 当前图号统一见 `figures/`，不要按旧7图编号引用 |
-| 附件3根目录及其 `results/`、`main_verification/` | `evidence/`、`evidence/results/`、`evidence/main_verification/` |
-| 旧英文稿最终代码包 | 对比及来源见 `provenance/`，未覆盖本仓库当前代码 |
+## 目录
 
-## 三种不同的复核
+| 目录 | 内容 |
+|---|---|
+| `paper/` | 论文正文 |
+| `supplement/` | 补充材料 |
+| `code/` | 原主实验代码、参数与回归入口 |
+| `data/` | 原主实验JSONL、回执、派生统计及独立核对结果 |
+| `comparison/` | LaZer、Argo与PQZK-BLNS的对照驱动、适配代码及依赖源码 |
+| `comparison_data/` | 当前补实验的原始记录、回执、环境、构建及统计 |
+| `figures/` | 8幅中文图及图与数据对应关系 |
+| `tools/` | 只读核验、统计复算及图的导出和重绘 |
+| `evidence/` | 主实验、回归和补实验的完整原始归档 |
+| `history/` | 独立历史批次和历史九级表，不与当前统计合并 |
+| `provenance/` | 输入归档指纹、源码差异及历史来源说明 |
 
-在仓库根目录执行。分析入口需要 Python 3.10 或兼容版本；统计和绘图依赖可用 `python3 -m pip install -r requirements-analysis.txt` 安装。完整性检查仅用标准库。
+## 实验数据
 
-```bash
-python3 tools/verify_artifacts.py
-python3 tools/recompute_statistics.py --output ../statistics_recomputed
-```
+主实验为3批随机交错实验，共7,200次正式会话；另有首次准备、策略变化、披露扫描和影子诊断。主实验及辅助任务合计12,480条正式计时，不把回归或影子记录计作新增主样本。
 
-第一条检查交付文件哈希、406项原始任务回执、图与Word嵌图对应。第二条从原始记录独立重算主统计、配对块和分层Bootstrap；输出到仓库外，不改写冻结数据。
+补实验包含26个条件，每条件300次，共7,800次正式会话及780次预热。LaZer分别采用GCC/G++11.4和Clang/Clang++14；Argo和PQZK-BLNS均使用GCC/G++11.4。独立流程检查包含52次正式样本及52次预热，不用于性能结论。此前4,200次补实验单独保留在`history/`。
 
-中文重绘需本机安装 Noto Serif CJK SC，或指定支持所需中文字符的字体。已交付 SVG 的字形转为路径，直接使用无需安装字体。
+统一适配输入为8个属性、每属性8 B和披露集{0,4,5}。Argo原生参照使用10×32 B且无披露。两外部适配的隐藏谓词、构造、模数嵌入与安全依据仍有差异，结果用于所列配置的工程比较；LaZer内部B1/G3/C3比较用于评估本文优化增量。详细条件见补充表S14和[比较范围说明](docs/COMPARISON_SCOPE_ZH.md)。
 
-```bash
-export LAZER_CJK_FONT=/path/to/Chinese-font.otf
-python3 tools/redraw_figures.py --output ../figures_redrawn
-```
+## 只读核验
 
-该入口输出当前8图的 SVG 和 PNG；不同字体或软件版本可导致像素与文件哈希变化。图1/2/3/5的绘图数值来自当前稿件已报告值，图4及补充图使用随附统计表；独立统计程序用于核对原始记录。
-
-重新运行密码实现属于另一种复现，需要 Ubuntu x86-64、GCC/G++、CMake、GMP/MPFR 开发包及原构建依赖。先阅读 `code/README_代码复现.md` 和 `code/source/project/00_check_env.sh`、`01_build.sh`。
+解压或克隆仓库后，在根目录执行：
 
 ```bash
-python3 code/source/run_e4.py --help
-python3 code/source/run_e4.py --mode smoke --cpu 0 --no-plots
+bash CHECK_SUBMISSION.sh
 ```
 
-将CPU编号改为本机可用编号；初次构建及依赖要求见原代码说明。完整 `full` 运行会产生新的计时批次；不同机器上的绝对耗时不等于本文原主批次。当前主对照为 B1/G3/C3，保留原 MPFR 拒绝判定，浮点候选不作为正式判定。
+该入口仅使用Python标准库，核对冻结文件、原始回执、源码指纹、Word引用、图文件与表2，并重算7,800次补实验的26组汇总和18组分块效应。结果写入仓库外的独立目录，不覆盖原始记录。它不重新运行密码实验。
 
-## 结果边界
+也可单独执行：
 
-主实验为7,200次正式主任务计时，406项任务另含辅助实验。整体优化降幅38.89%/26.21%与紧致化独立增量3.83%/6.87%不可混为一谈。重复出示增量区间跨零；服务摊销范围为三次生命周期的实际最小/最大值，各N共用序列前缀。有限回归不等于完整密码安全证明。
+```bash
+python3 tools/verify_submission.py
+python3 tools/recompute_comparison.py --output ../recomputed_comparison
+```
 
-## 引用和版本
+原主实验及历史统计的复算：
 
-仓库：https://github.com/freakchan1212/lazer-credential-artifacts
+```bash
+python3 -m pip install -r requirements-analysis.txt
+python3 tools/recompute_statistics.py --output ../recomputed_main
+python3 tools/analyze_retry_blocks.py --output ../recomputed_retry
+python3 tools/recompute_revision.py --output ../recomputed_historical
+```
 
-本次整理拟发布标签为 `paper-artifacts-20261028`，引用元数据见 `CITATION.cff`。新版本的 Zenodo DOI 待发布归档后确认；本文件不预填未知 DOI。
+`.gitattributes`关闭自动换行转换，避免Windows检出改变已归档CSV、JSONL和源码的指纹。原始记录及其回执不得手工修改。
 
-首次归档版本 `paper-artifacts-20261027` 的 DOI 为 https://doi.org/10.5281/zenodo.23719548 。该 DOI 对应首次归档文件快照，不随 GitHub 后续修改自动更新。论文应引用与实际提交材料相对应的具体版本。
+## 重新运行实验
 
-[访问与引用说明](docs/GitHub发布与论文引用.md) 给出版本关系；[本次整理核查](docs/整理核查报告.md) 记录修改范围和验证结果。第三方许可及自有内容授权状态见 [LICENSES.md](LICENSES.md)。正式发表后可补充论文的书目信息和论文 DOI。
+原主实验见[代码运行说明](code/README_代码复现.md)。重新运行补充对照：
 
-## Windows 的检查方式
+```bash
+cd comparison
+bash RUN_UBUNTU.sh
+```
 
-完整性检查仅使用 Python 标准库。在仓库根目录执行 `python -X utf8 tools/verify_artifacts.py`；命令启动后应显示 `PASSED` 和检查数量。应先确认 Python 解释器可用，安装 GitHub Desktop 并不等于安装了 Python。统计和绘图另需 `requirements-analysis.txt` 中的依赖；原生密码实现的完整复现环境仍以 Ubuntu 说明为准。
+入口依次完成依赖安装、源码核验、驱动测试、构建、流程检查和正式计时。实验条件为Ubuntu x86-64、AVX2/AES/FMA、禁用AVX-512及单线程绑核。系统与Python依赖首次安装需要网络。具体生命周期、编译器、计时范围和输出结构见[对照运行说明](comparison/README_ZH.md)。不同机器的重新测量不保证复制原绝对耗时。
 
-本仓库使用 `.gitattributes` 保留原文件字节，避免跨系统换行转换影响 SHA256。修改文件后应先复核变更范围再更新根目录清单，不能通过重写清单掩盖意外的实验材料改动。
+## 图的精确导出与重绘
 
-## 使用 GitHub Desktop 完整上传
+直接复制文稿所用图文件：
 
-上游忽略规则会跳过部分已随包提供的头文件与第三方源码。复制整理包到已有本地仓库后，双击根目录 `stage_frozen_files.cmd`；辅助脚本先用PowerShell核对清单文件的SHA256，再将清单中的全部文件加入Git暂存区（包括被忽略的必要文件）。不需Python，不提交、不推送、不发布；之后在GitHub Desktop检查并提交。不要仅凭网页目录存在判断材料完整。该入口保留上游忽略规则及原源码不变，使用本机Git或GitHub Desktop内附Git。
+```bash
+python3 tools/export_submission_figures.py --output ../figures_exact
+```
+
+从冻结数据重绘：
+
+```bash
+python3 -m pip install -r requirements-analysis.txt
+python3 tools/plot_bw.py --output ../figures_redrawn
+```
+
+`figures/`是与文稿对应的精确版本。SVG中文字已转为路径，PDF保留矢量；PNG为兼容预览。重绘可能因绘图库和字体引擎版本产生字节差异，不能据此增加实验样本。字体及许可见`tools/fonts/`。
+
+## 引用与固定归档
+
+引用元数据见[CITATION.cff](CITATION.cff)。本材料的正式版本标识为2026.11.01，固定归档DOI应使用该版本的Zenodo发布记录。仓库地址为：
+
+https://github.com/freakchan1212/lazer-credential-artifacts
+
+旧归档`paper-artifacts-20261028`对应https://doi.org/10.5281/zenodo.23720366，仅标识此前材料；不代表已经包含本版本的双对照数据。固定版本的文件与指纹以相应发布记录为准。
+
+## 权利与许可
+
+第三方代码及字体保留各自许可和版权说明，见[LICENSES.md](LICENSES.md)。作者自有材料未另行附加统一开放许可证；仓库的可访问性不替代具体文件的授权条款。

@@ -1,0 +1,71 @@
+{
+  "schema": "TWO-BASELINES-VALIDATION-1",
+  "date": "2026-10-31",
+  "status": "END_TO_END_SMOKE_PASSED",
+  "environment": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "compiler_versions": {
+    "gcc": {
+      "cc": {
+        "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "sha256": "6117c52522997d2aaccb2b52b3c6bf42c0a6c5edb1d718431fed6b2fc5fec234",
+        "version": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+      },
+      "cxx": {
+        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+        "version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+      }
+    },
+    "clang": {
+      "cc": {
+        "path": "/workspace/scratch/19bb2b6505c9/work/three_baselines/depsroot/usr/lib/llvm-18/bin/clang",
+        "sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45",
+        "version": "Ubuntu clang version 18.1.3 (1ubuntu1)"
+      },
+      "cxx": {
+        "path": "/workspace/scratch/19bb2b6505c9/work/three_baselines/depsroot/usr/lib/llvm-18/bin/clang",
+        "sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45",
+        "version": "Ubuntu clang version 18.1.3 (1ubuntu1)"
+      }
+    }
+  },
+  "selected": [
+    "argo",
+    "pqzk-blns"
+  ],
+  "external_compiler": "gcc",
+  "driver_unit_tests": 6,
+  "conditions": 26,
+  "non_warmup_smoke_measurements": 52,
+  "fixed_coin_functional_probes": 22,
+  "subset_and_recreation_records": 60,
+  "checks": [
+    "source/archive completeness",
+    "actual byte proof validation",
+    "public-only verifier preprocessing",
+    "worker negative guards",
+    "cross-block fingerprint rejection",
+    "preservation of existing results"
+  ],
+  "full_7800_on_user_machine": "NOT_RUN",
+  "common_parameter_security_equivalence": false,
+  "flint": "Previously verified build of the same bundled source reused for this entrypoint validation",
+  "evidence": {
+    "validation/main_entrypoint.log": "55ace4c89ede79f1fa8c733ef7c7ecd3abd87052a187e8832597cd68332812e4",
+    "validation/READ_ME.txt": "65db6f43383cd3a19ba46b3c9795777a9b89a6fffc2b54e09663c2ac88da1d7e",
+    "validation/existing_result_protection.json": "6ad189a44931be2c69e3bf88a76866530ae1c3e0f05fd2d1e303d54e6a3f31ce",
+    "validation/smoke_results.tar.gz": "5180f50c67a0920442aea825b07d6482cc39c680cfb5cbc8327d6f43b348483c",
+    "validation/unit_tests.log": "abb77625a48ddfd3d7f8b7ffb46f8bca30db14e5f8460923293ab3ef984f3304",
+    "validation/main_exit.json": "9db3ce4f9e81c43b1692cdbfaeb38d827920e577ad330195d0c5a6240a78157a",
+    "validation/bootstrap_version_selection.json": "325a0f77ecc8edd5e901fc96bd6f0aedcfe8edc7a6438644c657dcc261fcf5ef"
+  },
+  "bootstrap_fix": {
+    "status": "SYNTAX_AND_MOCKED_ABI_SELECTION_PASSED",
+    "abi": [
+      "3.10",
+      "3.12"
+    ],
+    "native_experiment_code_changed": false
+  }
+}

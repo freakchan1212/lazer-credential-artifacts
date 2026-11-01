@@ -1,0 +1,18 @@
+# FROM ubuntu:22.04
+# FROM ubuntu:24.04
+FROM debian:bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt update -y && apt install -y wget tar xz-utils unzip make m4 g++ libgmp10 libgmp-dev libntl44 libntl-dev clang
+
+# Copy source code from local folder 
+WORKDIR /home/test
+COPY . .
+
+# Build executables
+RUN make -j1
+
+# RUN ./BLNS
+# RUN ./bench

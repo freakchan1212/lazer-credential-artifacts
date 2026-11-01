@@ -1,2 +1,9 @@
-# Preserve artifact bytes across platforms; SHA256 manifests depend on exact bytes.
+# Preserve the exact bytes covered by SHA256_MANIFEST.json on every platform.
 * -text
+*.docx binary
+*.pdf binary
+*.png binary
+*.otf binary
+*.zip binary
+*.gz binary
+*.so binary

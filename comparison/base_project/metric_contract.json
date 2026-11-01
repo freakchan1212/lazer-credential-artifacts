@@ -1,0 +1,18 @@
+{
+  "baseline_id": "LAZER-ORIGINAL-METRICS-1.0-20261014",
+  "display_name": "lazer基线-指标版",
+  "protocol": "official LaZer python/anon_cred at 10eafeca4cd53ff4fc54193dce904dbd0026fefd",
+  "workloads": ["raw_fresh", "raw_steady"],
+  "performance": [
+    {"id":"P01","name":"出示证明生成时间","fields":["p2_prove_ms"],"statistics":["mean","median","p95_nearest_rank"]},
+    {"id":"P02","name":"出示证明验证时间","fields":["p2_verify_ms"],"statistics":["mean","median","p95_nearest_rank"]},
+    {"id":"P03","name":"出示证明大小","fields":["presentation_proof_bytes"],"statistics":["mean","min","max"]},
+    {"id":"P04","name":"签发时间与通信量","fields":["p1_prove_ms","p1_verify_and_issue_ms","masked_request_bytes","blind_credential_bytes","issuance_payload_total_bytes"],"scope":"fresh per trial; steady once in setup"},
+    {"id":"P05","name":"初始化与预处理","fields":["user_init_ms","issuer_init_ms","verifier_init_ms"],"scope":"fresh per trial; steady once in setup; module import/public parameter expansion and keygen separately in setup_metrics.csv"},
+    {"id":"P06","name":"峰值内存","fields":["process_peak_rss_kib"],"scope":"Linux child-process lifetime ru_maxrss, includes import/setup; not phase-local allocation"},
+    {"id":"P07","name":"内部重试与合法失败","counter_phases":["p1_counters","issue_counters","p2_counters"],"fields":["honest_failure_rate_observed","deadline_exceeded_count","uncompleted_rate","worker_timeout"],"scope":"outer range/quadratic proving rejection loops and Falcon preimage attempts; no count of every Gaussian scalar micro-sampler"}
+  ],
+  "security_ids": ["S01","S02","S03","S04","S05","S06"],
+  "security_numeric_scope": "declared generic attack model and original conditional knowledge-error formula; no new whole-protocol proof or numeric ZK distance bound",
+  "network_scope": "local library payload only; no sockets, network latency, TLS framing, throughput, energy or cycles measurement"
+}

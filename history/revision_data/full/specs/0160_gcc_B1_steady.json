@@ -1,0 +1,13 @@
+{
+  "compiler": "gcc",
+  "variant": "B1",
+  "lifecycle": "steady",
+  "task": "main",
+  "round": 3,
+  "block": 2,
+  "sessions": 20,
+  "warmup": 2,
+  "verification_mode": "strict",
+  "formal": true,
+  "id": "0160_gcc_B1_steady"
+}

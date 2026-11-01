@@ -1,0 +1,13 @@
+{
+  "compiler": "clang",
+  "variant": "C3",
+  "files": {
+    "ACTIVE_VARIANT.json": "cb6cffc5b3ea6b977a5710a74dfa4a7a89cbb1e6a3cc4582b883a5f423e51ec8",
+    "lazer/lazer.h": "5db4d078a6650ac973e72d3e679d14753306ff01d0e908a5d2ac2f001f9a0a62",
+    "lazer/liblazer.so": "9c391f31f9daef708fb94eb1018fad3de27a3a0bfdd694f45008605094e5d83c",
+    "lazer/python/_lazer_cffi.cpython-310-x86_64-linux-gnu.so": "d60477e64872b406976a4d8fe14dec1f4d7efd37966f90763951345af6937692",
+    "lazer/python/anon_cred/anon_cred.py": "a79990e3b76f13226aa4f386803e2b7ea832ff21edc045032da70dcf68a62401",
+    "lazer/python/anon_cred/anon_cred_params.h": "492d50261ff03acf8af524c000e24f7d7695503245c2ada84728c7b04f19e690",
+    "lazer/python/anon_cred/_anon_cred_params_cffi.cpython-310-x86_64-linux-gnu.so": "f94d595d9163e7d590a23295e7baa7955ca0e89bfe282fa8bdccd89ac36238e3"
+  }
+}

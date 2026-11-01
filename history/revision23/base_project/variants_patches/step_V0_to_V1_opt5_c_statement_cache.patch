@@ -1,0 +1,312 @@
+--- V0/lazer/src/lin-proofs.c
++++ V1/lazer/src/lin-proofs.c
+@@ -202,6 +202,136 @@
+  * R2,r1,r0 are N+2+lambda/2 arrays
+  * R2 is 2*(m1+l)+lambda x 2*(m1+l)+lambda
+  */
++
++/* Direction 5 (V1): Thread-local dynamically-sized cache for static statement matrix Ds:
++ * Precomputes and caches:
++ *   (1) SHAKE128 absorbed prefix state after byte-aligned encoding of Ds (and Dm if l > 0),
++ *       WITHOUT calling coder_enc_end() prematurely so the Fiat-Shamir stream is 100% identical to V0/B1!
++ *   (2) oDs = polymat_auto(Ds) already converted to CRT representation
++ *   (3) Keeps state->Ds in CRT representation so prove() never triggers _fromcrt/_tocrt on Ds
++ *   (4) Dynamically grows via realloc so active entries are NEVER evicted while alive.
++ */
++typedef struct {
++  polymat_ptr ds_key;
++  polymat_t oDs;
++  shake128_state_t hstate_prefix;
++  int valid;
++} _lin_ds_cache_entry_t;
++
++static __thread _lin_ds_cache_entry_t *_lin_ds_cache = NULL;
++static __thread size_t _lin_ds_cache_cap = 0;
++
++static _lin_ds_cache_entry_t *
++_lin_ds_cache_lookup (polymat_t Ds)
++{
++  size_t i;
++  if (Ds == NULL || _lin_ds_cache == NULL)
++    return NULL;
++  for (i = 0; i < _lin_ds_cache_cap; i++)
++    {
++      if (_lin_ds_cache[i].valid && _lin_ds_cache[i].ds_key == Ds)
++        {
++          baseline_counts[10]++;
++          return &_lin_ds_cache[i];
++        }
++    }
++  return NULL;
++}
++
++static void
++_lin_ds_cache_evict (polymat_t Ds)
++{
++  size_t i;
++  if (Ds == NULL || _lin_ds_cache == NULL)
++    return;
++  for (i = 0; i < _lin_ds_cache_cap; i++)
++    {
++      if (_lin_ds_cache[i].valid && _lin_ds_cache[i].ds_key == Ds)
++        {
++          polymat_free (_lin_ds_cache[i].oDs);
++          shake128_clear (_lin_ds_cache[i].hstate_prefix);
++          _lin_ds_cache[i].valid = 0;
++          _lin_ds_cache[i].ds_key = NULL;
++        }
++    }
++}
++
++static void
++_lin_ds_cache_populate (_lin_state_t state)
++{
++  lin_params_srcptr params = state->params;
++  lnp_tbox_params_srcptr tbox_params = params->tbox_params;
++  abdlop_params_srcptr tbox = tbox_params->tbox;
++  polyring_srcptr Rq = tbox->ring;
++  int_srcptr q = Rq->q;
++  const unsigned int log2q = polyring_get_log2q (Rq);
++  const unsigned int d = Rq->d;
++  const unsigned int Z = tbox_params->Z;
++  const unsigned int m1 = tbox->m1 - Z;
++  const unsigned int l = tbox->l;
++  const unsigned int nprime = tbox_params->nprime;
++  const size_t buflen = CEIL ((m1 * nprime + l * nprime) * d * log2q, 8) + 1;
++  coder_state_t cstate;
++  size_t len, i;
++  uint8_t *buf;
++  _lin_ds_cache_entry_t *slot = NULL;
++
++  _lin_ds_cache_evict (state->Ds);
++  for (i = 0; i < _lin_ds_cache_cap; i++)
++    {
++      if (!_lin_ds_cache[i].valid)
++        {
++          slot = &_lin_ds_cache[i];
++          break;
++        }
++    }
++  if (slot == NULL)
++    {
++      size_t new_cap = (_lin_ds_cache_cap == 0) ? 32 : (_lin_ds_cache_cap * 2);
++      _lin_ds_cache_entry_t * grown = (_lin_ds_cache_entry_t *)realloc (
++          _lin_ds_cache, new_cap * sizeof (_lin_ds_cache_entry_t));
++      ASSERT_ERR (grown != NULL);
++      memset (grown + _lin_ds_cache_cap, 0,
++              (new_cap - _lin_ds_cache_cap) * sizeof (_lin_ds_cache_entry_t));
++      _lin_ds_cache = grown;
++      slot = &_lin_ds_cache[_lin_ds_cache_cap];
++      _lin_ds_cache_cap = new_cap;
++    }
++
++  /* 1. Reduce Ds (and Dm) in coeff domain and pre-absorb into SHAKE128 prefix.
++   * CRITICAL: Do NOT call coder_enc_end(cstate) here! Since d=64 is a multiple of 8,
++   * coder_enc_urandom4 writes an exact multiple of 8 bits (cstate->bit_off == 0).
++   * Deferring coder_enc_end(cstate) to __lnp_hash_statement_arp after encoding state->u
++   * ensures the absorbed byte stream is 100% bit-for-bit identical to V0/B1. */
++  polymat_redp (state->Ds, state->Ds);
++  if (l > 0 && state->Dm != NULL)
++    polymat_redp (state->Dm, state->Dm);
++
++  buf = _alloc (buflen);
++  coder_enc_begin (cstate, buf);
++  coder_enc_urandom4 (cstate, state->Ds, q, log2q);
++  if (l > 0 && state->Dm != NULL)
++    coder_enc_urandom4 (cstate, state->Dm, q, log2q);
++  ASSERT_ERR (cstate->bit_off == 0);
++  len = coder_get_offset (cstate);
++  ASSERT_ERR (len % 8 == 0);
++  len >>= 3;
++
++  shake128_init (slot->hstate_prefix);
++  shake128_absorb (slot->hstate_prefix, buf, len);
++  _free (buf, buflen);
++
++  /* 2. Precompute oDs = polymat_auto(Ds) and convert both oDs and Ds to CRT domain */
++  polymat_alloc (slot->oDs, Rq, nprime, m1);
++  polymat_auto (slot->oDs, state->Ds);
++  polymat_tocrt (slot->oDs);
++  polymat_tocrt (state->Ds);
++
++  slot->ds_key = state->Ds;
++  slot->valid = 1;
++  baseline_counts[11]++;
++}
++
+ void
+ _lnp_tbox_prove (uint8_t hash[32], polyvec_t tB, polyvec_t h, poly_t c,
+                  polyvec_t z1, polyvec_t z21, polyvec_t hint, polyvec_t z3,
+@@ -325,7 +455,8 @@
+    * dom, and inputs are still in coeff dom here.
+    */
+   DEBUG_PRINTF (DEBUG_LEVEL >= 2, "%s", "precompute automorphisms");
+-  if (Ds != NULL)
++  _lin_ds_cache_entry_t *_ds_ce = _lin_ds_cache_lookup (Ds);
++  if (Ds != NULL && _ds_ce == NULL)
+     {
+       polymat_alloc (oDs, Rq, nprime, m1);
+       polymat_auto (oDs, Ds);
+@@ -615,7 +746,8 @@
+       DEBUG_PRINTF (DEBUG_LEVEL >= 2, "%s", "schwarz-zippel z4 evalqs");
+       ___schwartz_zippel_accumulate_z4 (
+           R2prime_sz, r1prime_sz, r0prime_sz, R2prime_sz2, r1prime_sz2,
+-          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u, oDs, oDm, z4,
++          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u,
++          (_ds_ce != NULL) ? _ds_ce->oDs : oDs, oDm, z4,
+           hash0, // XXX why hash0 needed ??
+           lambda * (2 * (d - 1) + 2 + Z), params, u0, u1, t0, t1);
+     }
+@@ -748,7 +880,7 @@
+   spolyvec_free (r1t);
+   poly_free (r0t);
+ 
+-  if (Ds != NULL)
++  if (Ds != NULL && _ds_ce == NULL)
+     polymat_free (oDs);
+   if (l > 0 && Dm != NULL)
+     polymat_free (oDm);
+@@ -919,7 +1051,8 @@
+     }
+ 
+   /* precompute automorphisms */
+-  if (Ds != NULL)
++  _lin_ds_cache_entry_t *_ds_ce = _lin_ds_cache_lookup (Ds);
++  if (Ds != NULL && _ds_ce == NULL)
+     {
+       polymat_alloc (oDs, Rq, nprime, m1);
+       polymat_auto (oDs, Ds);
+@@ -1105,7 +1238,8 @@
+     {
+       ___schwartz_zippel_accumulate_z4 (
+           R2prime_sz, r1prime_sz, r0prime_sz, R2prime_sz2, r1prime_sz2,
+-          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u, oDs, oDm, z4, hash0,
++          r0prime_sz2, R2t, r1t, r0t, Ds, Dm, u,
++          (_ds_ce != NULL) ? _ds_ce->oDs : oDs, oDm, z4, hash0,
+           lambda * (2 * (d - 1) + 2 + Z), params, u0, u1, t0, t1);
+     }
+   STOPWATCH_STOP (stopwatch_lnp_tbox_verify_sz_z4);
+@@ -1198,7 +1332,7 @@
+   spolyvec_free (r1t);
+   poly_free (r0t);
+ 
+-  if (Ds != NULL)
++  if (Ds != NULL && _ds_ce == NULL)
+     polymat_free (oDs);
+   if (l > 0 && Dm != NULL)
+     polymat_free (oDm);
+@@ -3759,36 +3893,60 @@
+   size_t len;
+   uint8_t *buf;
+ 
+-  buf = _alloc (buflen);
+-
+-  coder_enc_begin (cstate, buf);
+-  if (state->Ds != NULL)
+-    {
+-      polymat_redp (state->Ds, state->Ds);
+-      coder_enc_urandom4 (cstate, state->Ds, q, log2q);
+-    }
+-  if (state->Dm != NULL)
+-    {
+-      polymat_redp (state->Dm, state->Dm);
+-      coder_enc_urandom4 (cstate, state->Dm, q, log2q);
+-    }
+-  if (state->u != NULL)
+-    {
+-      polyvec_redp (state->u, state->u);
+-      coder_enc_urandom3 (cstate, state->u, q, log2q);
+-    }
+-  coder_enc_end (cstate);
+-  len = coder_get_offset (cstate);
+-  ASSERT_ERR (len % 8 == 0);
+-  ASSERT_ERR (len / 8 <= buflen);
+-  len >>= 3; /* nbits to nbytes */
+-
+-  shake128_init (hstate);
+-  shake128_absorb (hstate, buf, len);
+-  shake128_squeeze (hstate, state->hash_arp, 32);
+-  shake128_clear (hstate);
+-
+-  _free (buf, buflen);
++  _lin_ds_cache_entry_t *_ds_ce = _lin_ds_cache_lookup (state->Ds);
++  if (_ds_ce != NULL)
++    {
++      const size_t u_buflen = CEIL (nprime * d * log2q, 8) + 1;
++      buf = _alloc (u_buflen);
++      memcpy (hstate, _ds_ce->hstate_prefix, sizeof (shake128_state_t));
++      coder_enc_begin (cstate, buf);
++      if (state->u != NULL)
++        {
++          polyvec_redp (state->u, state->u);
++          coder_enc_urandom3 (cstate, state->u, q, log2q);
++        }
++      coder_enc_end (cstate);
++      len = coder_get_offset (cstate);
++      ASSERT_ERR (len % 8 == 0);
++      len >>= 3;
++      shake128_absorb (hstate, buf, len);
++      shake128_squeeze (hstate, state->hash_arp, 32);
++      shake128_clear (hstate);
++      _free (buf, u_buflen);
++    }
++  else
++    {
++      buf = _alloc (buflen);
++
++      coder_enc_begin (cstate, buf);
++      if (state->Ds != NULL)
++        {
++          polymat_redp (state->Ds, state->Ds);
++          coder_enc_urandom4 (cstate, state->Ds, q, log2q);
++        }
++      if (state->Dm != NULL)
++        {
++          polymat_redp (state->Dm, state->Dm);
++          coder_enc_urandom4 (cstate, state->Dm, q, log2q);
++        }
++      if (state->u != NULL)
++        {
++          polyvec_redp (state->u, state->u);
++          coder_enc_urandom3 (cstate, state->u, q, log2q);
++        }
++      coder_enc_end (cstate);
++      len = coder_get_offset (cstate);
++      ASSERT_ERR (len % 8 == 0);
++      ASSERT_ERR (len / 8 <= buflen);
++      len >>= 3; /* nbits to nbytes */
++
++      shake128_init (hstate);
++      shake128_absorb (hstate, buf, len);
++      shake128_squeeze (hstate, state->hash_arp, 32);
++      shake128_clear (hstate);
++
++      _free (buf, buflen);
++    }
+ }
+ 
+ static void
+@@ -4573,6 +4731,7 @@
+   lnp_tbox_params_srcptr tbox_params = params->tbox_params;
+   const unsigned int l = tbox_params->tbox->l;
+ 
++  _lin_ds_cache_evict (state->Ds);
+   polymat_free (state->Ds);
+   _free (state->Ds, sizeof (polymat_t));
+   state->Ds = NULL;
+@@ -4601,6 +4760,7 @@
+ 
+   if (A == NULL)
+     {
++      _lin_ds_cache_evict (state->Ds);
+       polymat_set_zero (state->Ds);
+       return;
+     }
+@@ -4644,6 +4804,7 @@
+   if (l > 0)
+     polymat_free (Dm_);
+   polymat_free (Ds_);
++  _lin_ds_cache_populate (state);
+ }
+ 
+ static void

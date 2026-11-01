@@ -1,0 +1,13 @@
+{
+  "compiler": "gcc",
+  "variant": "B1",
+  "lifecycle": "fresh",
+  "task": "main",
+  "round": 1,
+  "block": 5,
+  "sessions": 20,
+  "warmup": 2,
+  "verification_mode": "strict",
+  "formal": true,
+  "id": "0066_gcc_B1_fresh"
+}

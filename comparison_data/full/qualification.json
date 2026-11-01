@@ -1,0 +1,76 @@
+{
+  "schema": "TWO-BASELINES-AUDIT-1",
+  "status": "SOURCE_COMPLETE_RUNNABLE",
+  "selected": [
+    "argo",
+    "pqzk-blns"
+  ],
+  "external_compiler": "gcc",
+  "application": {
+    "attributes": 8,
+    "attribute_bytes": 8,
+    "D": [
+      0,
+      4,
+      5
+    ],
+    "lifecycle": [
+      "steady",
+      "fresh"
+    ],
+    "control": "steady PADDED_NOCACHE"
+  },
+  "baseline": {
+    "p": 12289,
+    "d": 64,
+    "q_show": 1125899906843221,
+    "variants": [
+      "B1",
+      "G3",
+      "C3"
+    ]
+  },
+  "implementations": {
+    "argo": {
+      "upstream_p": 425801,
+      "upstream_N": 256,
+      "q_show": 234086575306343681,
+      "proof_size_kind": "actual_fixed_width_wire",
+      "validation": "Decoded bytes and independently reconstructed public statement",
+      "runtime_gates": "Honest, wrong length, noncanonical coefficient, changed CRS/challenge/target/disclosed attribute",
+      "comparison_limits": [
+        "Different signature/proof parameters",
+        "Hidden zero-extension proof not added",
+        "Matched security analysis not established"
+      ]
+    },
+    "pqzk-blns": {
+      "upstream_p": 12289,
+      "q_show": 1125899907006629,
+      "proof_size_kind": "actual_serialized",
+      "validation": "Upstream verifier with public-only adapted preprocessing",
+      "runtime_gates": "Honest, changed nonce, changed disclosed attribute and serialized proof in adapted modes",
+      "comparison_limits": [
+        "Input-bit mapping does not add hidden-bit proof predicates",
+        "Proof modulus is a multiple of p",
+        "Matched security analysis not established"
+      ]
+    }
+  },
+  "common_parameter_security_equivalence": false,
+  "reporting_scope": "Task-adapted and native-configuration measurements; do not label as a completed strict same-parameter/same-security comparison",
+  "source_sha256": {
+    "argo_worker.c": "6f429309a7ddbb54d8a194e24c4677ec1b878de3d3937a599c8ec03cebe15411",
+    "argo_wire.h": "d583deaacea1c8b341338dd5439802de53714dead16143a2f26cda074f1ef30a",
+    "argo_public.h": "00fb0a9998faddc1387c4ddb28c50b32096762c2e9cbbe530fbfab980f878cbb",
+    "external_worker.cc": "604942e53dc2b212a627e9f8182768a44eb0c75b644ac161d046a13439d7836e",
+    "vendor/argo.tar.gz": "209d935a46d47ae7851d33ea6b826ced3c64ae4c7bc9517e856d38a5df365419",
+    "vendor/flint.tar.gz": "24712f842b952bb7b187b07c4d3fa5c6f91d0c53fa94d6581c1a5691ef60c446",
+    "vendor/pqzk-blns/ISIS.cc": "3199a40786590ad9128f89d93c052b289a6e95735b8cb3ef5f53b247df275ef9",
+    "vendor/pqzk-blns/Holder.cc": "400aa56d8e382bd236df0417f03fa72d19f72fc36821aaeb30014787f1d9ed14",
+    "vendor/pqzk-blns/Verifier.cc": "e676af1fac2f89c0aac4e25539608bef19d9360bd630a3fa4220447bac06400d",
+    "base_project/e4_select.py": "4fe709f46db1de90fdee302724070023489f05e279ecc008d8672e8b4264e129",
+    "base_project/e4_worker.py": "39a44e813f88f3de097a140b869a6d647fc77843848d34dd21539be3440c4188",
+    "base_project/lazer/python/anon_cred/anon_cred_params.h": "8c262443270d723e528794c863082cce98e90ca35a501a602a4683b8f3b84e0e"
+  }
+}

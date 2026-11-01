@@ -1,0 +1,44 @@
+{
+  "schema": "RELEASE-VERIFICATION-20261101",
+  "materials_version": "2026.11.01",
+  "documents": {
+    "manuscript.docx": {
+      "equations": 179,
+      "tables": 7,
+      "references": 47,
+      "pages": 10,
+      "media_byte_preserved": true,
+      "repository_hyperlink_verified": true
+    },
+    "supplement.docx": {
+      "equations": 29,
+      "tables": 19,
+      "references": 24,
+      "pages": 16,
+      "media_byte_preserved": true,
+      "repository_hyperlink_verified": true
+    }
+  },
+  "unchanged_file_counts": {
+    "data": 833,
+    "comparison_data": 2712,
+    "evidence": 59,
+    "history": 1809,
+    "analysis": 5,
+    "code/source": 697,
+    "comparison/base_project": 764,
+    "comparison/vendor": 41
+  },
+  "current_figures_byte_preserved": 24,
+  "experimental_implementation_sources_unchanged": true,
+  "strict_same_parameters_security_equivalence": false,
+  "remote_publication_performed": false,
+  "new_version_doi_assigned": false,
+  "checksum_scope": "SHA256_MANIFEST.json covers every delivered file except itself; nested source manifests describe their documented original scopes.",
+  "executed_checks": {
+    "submission_verifier": "PASSED; 7037 manifest entries; 71 REF targets; 8 vector figures",
+    "comparison_recomputation": "PASSED; 7800 formal samples; 26 summary groups; 18 effects; 25000 bootstrap repetitions",
+    "comparison_package": "PASSED; 834 files",
+    "comparison_driver_unit_tests": "PASSED; 6 tests"
+  }
+}

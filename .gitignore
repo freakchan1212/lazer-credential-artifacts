@@ -1,9 +1,12 @@
-__pycache__/
-*.pyc
-.venv*/
+# Local caches and newly generated outputs only; frozen records remain tracked.
+**/__pycache__/
+**/*.pyc
+**/.venv/
 .DS_Store
-generated*/
-code/source/project/.build/
-code/source/project/.deps/
-code/source/project/results/
-code/source/results/
+Thumbs.db
+comparison/builds_dual*/
+comparison/results/
+comparison/source_audit.json
+recomputed_*/
+figures_redrawn/
+figures_exact/

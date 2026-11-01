@@ -1,0 +1,13 @@
+{
+  "compiler": "clang",
+  "variant": "B1",
+  "lifecycle": "steady",
+  "task": "main",
+  "round": 2,
+  "block": 1,
+  "sessions": 20,
+  "warmup": 2,
+  "verification_mode": "strict",
+  "formal": true,
+  "id": "0134_clang_B1_steady"
+}

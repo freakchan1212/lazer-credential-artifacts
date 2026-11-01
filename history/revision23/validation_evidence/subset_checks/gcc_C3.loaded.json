@@ -1,0 +1,17 @@
+{
+  "actual_library": {
+    "lazer/liblazer.so": "7a04d5939d831613cdcb7fa43c8be255fc68229436a54f723011b9191f5243e5",
+    "lazer/python/_lazer_cffi.cpython-312-x86_64-linux-gnu.so": "1ab03ed93138cbf4ee7d6c3b30af7f05fdd2fb0ee9699bf95b729fbbb0d2d373",
+    "lazer/python/anon_cred/_anon_cred_params_cffi.cpython-312-x86_64-linux-gnu.so": "50b9b867f0d4e14fc06765a766b485e21dd7d5a0671e2a220f2630818da54a0a"
+  },
+  "compiler": "gcc",
+  "variant": "C3",
+  "affinity": [
+    0
+  ],
+  "runtime_libraries": {
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+    "/usr/lib/x86_64-linux-gnu/libgmp.so.10.5.0": "0ccdfb6d6f5c039465f6d002cf7e4c072d48ac6a2cffc8dd6c748dec31592804",
+    "/usr/lib/x86_64-linux-gnu/libmpfr.so.6.2.1": "2156351fa3dedd04a7381c6ac7a8a26efa2d6fb08b80f8a2d644ccdd653710ae"
+  }
+}

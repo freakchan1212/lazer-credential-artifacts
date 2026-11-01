@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,hashlib,collections,statistics,math,csv
 import numpy as np
-R=Path(__file__).resolve().parent.parent;B=R/'data';O=B/'independent_checks';O.mkdir(exist_ok=True);allrows=[];jobs=json.loads((B/'plan.json').read_text());out=[];metrics=[]
+R=Path(__file__).resolve().parents[2];B=R/'data';O=B/'independent_checks';O.mkdir(exist_ok=True);allrows=[];jobs=json.loads((B/'plan.json').read_text());out=[];metrics=[]
 for j in jobs:
  p=B/'raw'/(j['id']+'.jsonl');rs=[json.loads(s) for s in p.read_text().splitlines()];rc=json.loads(p.with_suffix('.receipt.json').read_text());assert hashlib.sha256(p.read_bytes()).hexdigest()==rc['sha256'];assert len(rs)==rc['rows'];allrows+=rs
 rows=[r for r in allrows if not r.get('warmup')];main=[r for r in rows if r['task']=='main'];counts=collections.Counter((r['task'],bool(r.get('formal'))) for r in rows)

@@ -1,0 +1,12 @@
+{
+  "compiler": "gcc",
+  "commit": "b622225950bd1b486d96bf191eb835e60eff775f",
+  "files": {
+    "Com.cc": "1728830a059c0907ec85e06dddb9d55f74e358a6e608c94e46581db81197c172",
+    "REVISION.diff": "3ee1e6bfbf86db6a488aadd544b4b1546766244eaef83d8fd15a8474b50b9ebd",
+    "params.h": "c0d2b8a334ffa82832a60194fce434393f8cd353e08c137dacde5ff49c167f0f",
+    "Hash.cc": "b2d1bc1f0a3fed77dafef5ab3debeb6164023a82e78daa975529a4bedda3a227",
+    "revision_worker": "a285cbc7acb647ef9fbb19f4edccb9fb02379f5f10335ab07b2de9006b0cc3df",
+    "ISIS.cc": "aaf3df6517f87ba7a03e4ef43830ea5f53ab61a2946315e29473cdecf29e3e87"
+  }
+}

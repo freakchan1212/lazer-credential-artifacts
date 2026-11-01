@@ -1,0 +1,9 @@
+{
+  "measurements": "COMPLETE",
+  "formal_sessions": 52,
+  "reviewer2": "TOOLCHAIN_VARIANTS_ON_ONE_MACHINE",
+  "reviewer3": "PARTIAL_TASK_ALIGNED_MEASUREMENTS_ONLY",
+  "strict_same_parameters": "NOT_ESTABLISHED",
+  "security_equivalence_established": false,
+  "performance_platform": "see environment_start.json"
+}

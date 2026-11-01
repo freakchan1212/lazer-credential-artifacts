@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-30",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "purpose": "functional validation only; not i5-13400F performance evidence",
+  "compilers": {
+    "gcc": {
+      "cc": {
+        "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "sha256": "6117c52522997d2aaccb2b52b3c6bf42c0a6c5edb1d718431fed6b2fc5fec234",
+        "version": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+      },
+      "cxx": {
+        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+        "version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+      }
+    },
+    "clang": {
+      "cc": {
+        "path": "/workspace/scratch/19bb2b6505c9/work/llvm_clean/usr/lib/llvm-18/bin/clang",
+        "sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45",
+        "version": "Ubuntu clang version 18.1.3 (1ubuntu1)"
+      },
+      "cxx": {
+        "path": "/workspace/scratch/19bb2b6505c9/work/llvm_clean/usr/lib/llvm-18/bin/clang",
+        "sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45",
+        "version": "Ubuntu clang version 18.1.3 (1ubuntu1)"
+      }
+    }
+  },
+  "native_builds": {
+    "gcc": [
+      "B1",
+      "G3",
+      "C3"
+    ],
+    "clang": [
+      "B1",
+      "G3",
+      "C3",
+      "PQZK_BLNS_task_adapter"
+    ]
+  },
+  "fixed_coin_probes": 22,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "byte_identity": "B1/G3 within compiler; same variant across GCC/Clang; each optimized variant vs forced generic",
+  "subset_records": 60,
+  "subset_cases": 54,
+  "recreation_cases": 6,
+  "smoke": {
+    "formal_format_sessions": 28,
+    "warmup_sessions": 28,
+    "tasks": 14,
+    "status": "PASSED",
+    "external_wrong_nonce": "rejected outside timing in both lifecycles"
+  },
+  "external_bug": "upstream blind issuance double-frees Pi in Verify_Com and I_VerCred; caller-owned buffer correction documented",
+  "address_sanitizer": {
+    "before": "double-free reproduced with stack trace",
+    "after": "steady lifecycle: one warmup and two measured-format proofs accepted; wrong nonce rejected; no ASan memory-access error",
+    "leak_detection": false,
+    "scope": "finite test only"
+  },
+  "unit_tests": "3 passed: plan balance/determinism, reject invalid worker records, retain regressions in statistics",
+  "i5_full_performance": "NOT_RUN: user machine required",
+  "whole_protocol_security_certified": false,
+  "security_equivalence_established": false,
+  "delivery_note": "LaZer core sources and flags tested; external-only ownership patch was rebuilt after ASan diagnosis",
+  "resume_completed_batch": "PASSED: completed raw blocks reused, receipt/specification checks enforced"
+}

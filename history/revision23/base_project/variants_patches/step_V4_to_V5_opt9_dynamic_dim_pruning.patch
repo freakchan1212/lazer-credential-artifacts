@@ -1,0 +1,257 @@
+--- V4/lazer/python/anon_cred/anon_cred.py
++++ V5/lazer/python/anon_cred/anon_cred.py
+@@ -61,9 +61,13 @@
+         self.B2.redc()
+         self._B2_h2 = falcon_decode_pk(pk,RING)
+         self.p1_prover = lin_prover_state_t(P1PP, lib.get_params("p1_param"))
+-        self.p2_prover = lin_prover_state_t(P2PP, lib.get_params("p2_param"))
++        self.p2_prover = lin_prover_state_t(P2PP, lib.get_params("p2_compact3_param"))
++        self.p2_prover_full = None
++        self._p2_compact_provers = {3: self.p2_prover}
++        self._p2_compact_cached_keys = {3: None}
+         self.p1_prover.set_statement_A(A_P1_STATIC)
+         self._p2_cached_pub_key = None
++        self._p2_full_cached_pub_key = None
+         self._verified_blindsig_cache = None
+ 
+     def maskmsg(self, msg: bytes):
+@@ -131,7 +135,6 @@
+ 
+         # prove [Ar,Atau,-B1,-B2]*(r,tau,s1,s2) + Am*m = 0
+         # as PoK(w): Aw + u = 0
+-        m_priv=self.m.zero_out_pols(pub_mvec)
+         if len(pub_mvec)==0:
+             u=polyvec_t(RING,8)
+         else:
+@@ -140,16 +143,53 @@
+             u=polyvec_t(RING, 8, [AM_pub * m_pub])
+ 
+         pub_key = tuple(pub_mvec)
+-        if self._p2_cached_pub_key != pub_key:
+-            AM_priv=AM.zero_out_cols(pub_mvec)
+-            A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
+-            self.p2_prover.set_statement_A(A)
+-            self._p2_cached_pub_key = pub_key
+-
+-        w = polyvec_t(RING, 48, [self.r, tau_, s1, s2, m_priv])
+-        self.p2_prover.set_statement_t(u)
+-        self.p2_prover.set_witness(w)
+-        proof = self.p2_prover.prove()
++        pub_set = set(pub_mvec)
++        k_disc = len(pub_set)
++        if 1 <= k_disc <= 8 and k_disc == len(pub_mvec) and all(0 <= idx < 8 for idx in pub_set):
++            h_priv = 8 - k_disc
++            priv_indices = [i for i in range(8) if i not in pub_set]
++            if k_disc == 3:
++                prover = self.p2_prover
++                if self._p2_cached_pub_key != pub_key:
++                    AM_priv_compact = AM.get_col_list(priv_indices)
++                    A = polymat_t(RING, 8, 45, [AR, ATAU, -B1, -self.B2, AM_priv_compact])
++                    prover.set_statement_A(A)
++                    self._p2_cached_pub_key = pub_key
++            else:
++                prover = self._p2_compact_provers.get(k_disc)
++                if prover is None:
++                    prover = lin_prover_state_t(P2PP, lib.get_params(f"p2_compact{k_disc}_param"))
++                    self._p2_compact_provers[k_disc] = prover
++                    self._p2_compact_cached_keys[k_disc] = None
++                if self._p2_compact_cached_keys.get(k_disc) != pub_key:
++                    if h_priv > 0:
++                        AM_priv_compact = AM.get_col_list(priv_indices)
++                        A = polymat_t(RING, 8, 40 + h_priv, [AR, ATAU, -B1, -self.B2, AM_priv_compact])
++                    else:
++                        A = polymat_t(RING, 8, 40, [AR, ATAU, -B1, -self.B2])
++                    prover.set_statement_A(A)
++                    self._p2_compact_cached_keys[k_disc] = pub_key
++            if h_priv > 0:
++                m_priv_compact = self.m.get_pol_list(priv_indices)
++                w = polyvec_t(RING, 40 + h_priv, [self.r, tau_, s1, s2, m_priv_compact])
++            else:
++                w = polyvec_t(RING, 40, [self.r, tau_, s1, s2])
++            prover.set_statement_t(u)
++            prover.set_witness(w)
++            proof = prover.prove()
++        else:
++            if self.p2_prover_full is None:
++                self.p2_prover_full = lin_prover_state_t(P2PP, lib.get_params("p2_param"))
++            m_priv = self.m.zero_out_pols(pub_mvec)
++            if self._p2_full_cached_pub_key != pub_key:
++                AM_priv = AM.zero_out_cols(pub_mvec)
++                A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++                self.p2_prover_full.set_statement_A(A)
++                self._p2_full_cached_pub_key = pub_key
++            w = polyvec_t(RING, 48, [self.r, tau_, s1, s2, m_priv])
++            self.p2_prover_full.set_statement_t(u)
++            self.p2_prover_full.set_witness(w)
++            proof = self.p2_prover_full.prove()
+ 
+         return proof
+ 
+@@ -204,8 +244,12 @@
+     def __init__(self, pk: falcon_pkenc):
+         self.B2 = falcon_decode_pk(pk,RING)
+         self.B2.redc()
+-        self.p2_verifier = lin_verifier_state_t(P2PP, lib.get_params("p2_param"))
++        self.p2_verifier = lin_verifier_state_t(P2PP, lib.get_params("p2_compact3_param"))
++        self.p2_verifier_full = None
++        self._p2_compact_verifiers = {3: self.p2_verifier}
++        self._p2_compact_cached_keys = {3: None}
+         self._p2_cached_pub_key = None
++        self._p2_full_cached_pub_key = None
+ 
+     #the private part should already be zeroed out in pub_msg 
+     def verify(self, pub_msg: bytes, pub_mvec:list, sig: bytes, strict: bool = False):
+@@ -229,18 +273,51 @@
+ 
+         # verify proof for PoK(w): Aw + u = 0
+         pub_key = tuple(pub_mvec)
+-        if self._p2_cached_pub_key != pub_key:
+-            AM_priv=AM.zero_out_cols(pub_mvec)
+-            A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
+-            self.p2_verifier.set_statement_A(A)
+-            self._p2_cached_pub_key = pub_key
++        pub_set = set(pub_mvec)
++        k_disc = len(pub_set)
+         proof = sig
+-        
+-        self.p2_verifier.set_statement_t(u)
+-        try:
+-            self.p2_verifier.verify(proof, strict=strict)
+-        except VerificationError:
+-            raise InvalidSignature("Signature invalid.")
++        if 1 <= k_disc <= 8 and k_disc == len(pub_mvec) and all(0 <= idx < 8 for idx in pub_set):
++            h_priv = 8 - k_disc
++            priv_indices = [i for i in range(8) if i not in pub_set]
++            if k_disc == 3:
++                verifier = self.p2_verifier
++                if self._p2_cached_pub_key != pub_key:
++                    AM_priv_compact = AM.get_col_list(priv_indices)
++                    A = polymat_t(RING, 8, 45, [AR, ATAU, -B1, -self.B2, AM_priv_compact])
++                    verifier.set_statement_A(A)
++                    self._p2_cached_pub_key = pub_key
++            else:
++                verifier = self._p2_compact_verifiers.get(k_disc)
++                if verifier is None:
++                    verifier = lin_verifier_state_t(P2PP, lib.get_params(f"p2_compact{k_disc}_param"))
++                    self._p2_compact_verifiers[k_disc] = verifier
++                    self._p2_compact_cached_keys[k_disc] = None
++                if self._p2_compact_cached_keys.get(k_disc) != pub_key:
++                    if h_priv > 0:
++                        AM_priv_compact = AM.get_col_list(priv_indices)
++                        A = polymat_t(RING, 8, 40 + h_priv, [AR, ATAU, -B1, -self.B2, AM_priv_compact])
++                    else:
++                        A = polymat_t(RING, 8, 40, [AR, ATAU, -B1, -self.B2])
++                    verifier.set_statement_A(A)
++                    self._p2_compact_cached_keys[k_disc] = pub_key
++            verifier.set_statement_t(u)
++            try:
++                verifier.verify(proof, strict=strict)
++            except VerificationError:
++                raise InvalidSignature("Signature invalid.")
++        else:
++            if self.p2_verifier_full is None:
++                self.p2_verifier_full = lin_verifier_state_t(P2PP, lib.get_params("p2_param"))
++            if self._p2_full_cached_pub_key != pub_key:
++                AM_priv = AM.zero_out_cols(pub_mvec)
++                A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++                self.p2_verifier_full.set_statement_A(A)
++                self._p2_full_cached_pub_key = pub_key
++            self.p2_verifier_full.set_statement_t(u)
++            try:
++                self.p2_verifier_full.verify(proof, strict=strict)
++            except VerificationError:
++                raise InvalidSignature("Signature invalid.")
+ 
+     def verify_strict(self, pub_msg: bytes, pub_mvec: list, sig: bytes):
+         return self.verify(pub_msg, pub_mvec, sig, strict=True)
+--- V4/lazer/python/anon_cred/anon_cred_params.h
++++ V5/lazer/python/anon_cred/anon_cred_params.h
+@@ -269,3 +269,88 @@
+ static const unsigned int p2_param_s1_indices[48] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47};
+ static const lin_params_t p2_param = {{ _p2_param, 64, p2_param_p, p2_param_pinv, 1, p2_param_s1_indices, 48, NULL, 0,  p2_param_Ps, 16, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
+ 
++/* Direction 9 (V5): Disclosure-Parameterized Subspace Projection parameter sets
++ * p2_compact{k}_param for k in {1..8} disclosed attributes (h = 8 - k hidden attributes).
++ * Verified against lnp-tbox-codegen.sage:
++ *   - Secret witness dimension: m1(k) = 48 - k (tbox->m1 = 50 - k including Z=2 exact-l2 slack polys)
++ *   - Binary norm proof dimension: nbin(k) = 16 - k (8 tag polys + h hidden attribute polys)
++ *   - Total exact-l2 + binary dimension: nex(k) = 50 - k
++ *   - Ring R_q2 (d=64, q=1125899906843221), kmsis=20, m2=64, kmlwe=32, Bsq=floor(Bound_()^2)=143158532224272924UL,
++ *     stdev1..4, scM1..4, Bz3sqr, Bz4, and knowledge error <= 2^-127 are strictly preserved.
++ *   - MSIS Bound(k) = sqrt((2*stdev1*sqrt(2*(m1(k)+Z)*d))^2 + (2*Bound_())^2):
++ *       k=0 (m1=48): log2(Bound) = 40.173114, MSIS_RHF = 1.0043793
++ *       k=3 (m1=45): log2(Bound) = 40.133841, MSIS_RHF = 1.0043707
++ *       k=8 (m1=40): log2(Bound) = 40.063167, MSIS_RHF = 1.0043554
++ */
++static const abdlop_params_t _p2_compact1_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 49, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact1_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 49, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact1_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 49, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact1_param_quad_eval = {{ _p2_compact1_param_quad_eval_, _p2_compact1_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact1_param = {{ _p2_compact1_param_tbox, _p2_compact1_param_quad_eval, 15, _p2_param_n, 8, 2, 49, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 29872UL }};
++static const unsigned int p2_compact1_param_Ps[15] = {16, 17, 18, 19, 20, 21, 22, 23, 40, 41, 42, 43, 44, 45, 46};
++static const unsigned int p2_compact1_param_s1_indices[47] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
++static const lin_params_t p2_compact1_param = {{ _p2_compact1_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact1_param_s1_indices, 47, NULL, 0, p2_compact1_param_Ps, 15, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact2_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 48, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact2_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 48, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact2_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 48, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact2_param_quad_eval = {{ _p2_compact2_param_quad_eval_, _p2_compact2_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact2_param = {{ _p2_compact2_param_tbox, _p2_compact2_param_quad_eval, 14, _p2_param_n, 8, 2, 48, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 29680UL }};
++static const unsigned int p2_compact2_param_Ps[14] = {16, 17, 18, 19, 20, 21, 22, 23, 40, 41, 42, 43, 44, 45};
++static const unsigned int p2_compact2_param_s1_indices[46] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45};
++static const lin_params_t p2_compact2_param = {{ _p2_compact2_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact2_param_s1_indices, 46, NULL, 0, p2_compact2_param_Ps, 14, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact3_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 47, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact3_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 47, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact3_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 47, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact3_param_quad_eval = {{ _p2_compact3_param_quad_eval_, _p2_compact3_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact3_param = {{ _p2_compact3_param_tbox, _p2_compact3_param_quad_eval, 13, _p2_param_n, 8, 2, 47, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 29488UL }};
++static const unsigned int p2_compact3_param_Ps[13] = {16, 17, 18, 19, 20, 21, 22, 23, 40, 41, 42, 43, 44};
++static const unsigned int p2_compact3_param_s1_indices[45] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};
++static const lin_params_t p2_compact3_param = {{ _p2_compact3_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact3_param_s1_indices, 45, NULL, 0, p2_compact3_param_Ps, 13, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact4_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 46, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact4_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 46, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact4_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 46, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact4_param_quad_eval = {{ _p2_compact4_param_quad_eval_, _p2_compact4_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact4_param = {{ _p2_compact4_param_tbox, _p2_compact4_param_quad_eval, 12, _p2_param_n, 8, 2, 46, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 29296UL }};
++static const unsigned int p2_compact4_param_Ps[12] = {16, 17, 18, 19, 20, 21, 22, 23, 40, 41, 42, 43};
++static const unsigned int p2_compact4_param_s1_indices[44] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43};
++static const lin_params_t p2_compact4_param = {{ _p2_compact4_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact4_param_s1_indices, 44, NULL, 0, p2_compact4_param_Ps, 12, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact5_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 45, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact5_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 45, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact5_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 45, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact5_param_quad_eval = {{ _p2_compact5_param_quad_eval_, _p2_compact5_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact5_param = {{ _p2_compact5_param_tbox, _p2_compact5_param_quad_eval, 11, _p2_param_n, 8, 2, 45, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 29104UL }};
++static const unsigned int p2_compact5_param_Ps[11] = {16, 17, 18, 19, 20, 21, 22, 23, 40, 41, 42};
++static const unsigned int p2_compact5_param_s1_indices[43] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42};
++static const lin_params_t p2_compact5_param = {{ _p2_compact5_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact5_param_s1_indices, 43, NULL, 0, p2_compact5_param_Ps, 11, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact6_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 44, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact6_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 44, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact6_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 44, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact6_param_quad_eval = {{ _p2_compact6_param_quad_eval_, _p2_compact6_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact6_param = {{ _p2_compact6_param_tbox, _p2_compact6_param_quad_eval, 10, _p2_param_n, 8, 2, 44, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 28912UL }};
++static const unsigned int p2_compact6_param_Ps[10] = {16, 17, 18, 19, 20, 21, 22, 23, 40, 41};
++static const unsigned int p2_compact6_param_s1_indices[42] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41};
++static const lin_params_t p2_compact6_param = {{ _p2_compact6_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact6_param_s1_indices, 42, NULL, 0, p2_compact6_param_Ps, 10, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact7_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 43, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact7_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 43, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact7_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 43, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact7_param_quad_eval = {{ _p2_compact7_param_quad_eval_, _p2_compact7_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact7_param = {{ _p2_compact7_param_tbox, _p2_compact7_param_quad_eval, 9, _p2_param_n, 8, 2, 43, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 28720UL }};
++static const unsigned int p2_compact7_param_Ps[9] = {16, 17, 18, 19, 20, 21, 22, 23, 40};
++static const unsigned int p2_compact7_param_s1_indices[41] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40};
++static const lin_params_t p2_compact7_param = {{ _p2_compact7_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact7_param_s1_indices, 41, NULL, 0, p2_compact7_param_Ps, 9, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++
++static const abdlop_params_t _p2_compact8_param_tbox = {{ _p2_param_ring, _p2_param_dcomp, 42, 64, 0, 12, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact8_param_quad_eval_ = {{ _p2_param_ring, _p2_param_dcomp, 42, 64, 9, 3, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const abdlop_params_t _p2_compact8_param_quad_many_ = {{ _p2_param_ring, _p2_param_dcomp, 42, 64, 11, 1, 20, _p2_param_Bsq, 1, 8, 5, 140, 1, 23, _p2_param_scM1, _p2_param_stdev1sq, 2, 12, _p2_param_scM2, _p2_param_stdev2sq}};
++static const lnp_quad_eval_params_t _p2_compact8_param_quad_eval = {{ _p2_compact8_param_quad_eval_, _p2_compact8_param_quad_many_, 4}};
++static const lnp_tbox_params_t _p2_compact8_param = {{ _p2_compact8_param_tbox, _p2_compact8_param_quad_eval, 8, _p2_param_n, 8, 2, 42, 2, 18, _p2_param_scM3, _p2_param_stdev3sq, 2, 29, _p2_param_scM4, _p2_param_stdev4sq, _p2_param_Bz3sqr, _p2_param_Bz4, &_p2_param_l2Bsq[0], _p2_param_inv4, 28528UL }};
++static const unsigned int p2_compact8_param_Ps[8] = {16, 17, 18, 19, 20, 21, 22, 23};
++static const unsigned int p2_compact8_param_s1_indices[40] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
++static const lin_params_t p2_compact8_param = {{ _p2_compact8_param, 64, p2_param_p, p2_param_pinv, 1, p2_compact8_param_s1_indices, 40, NULL, 0, p2_compact8_param_Ps, 8, p2_param_Es, p2_param_Es_nrows, NULL, NULL }};
++

@@ -1,0 +1,62 @@
+{
+  "smoke": {
+    "status": "PASS",
+    "errors": [],
+    "formal_rows": 52,
+    "warmup_rows": 52,
+    "groups": 26,
+    "jobs": 26,
+    "artifact_hashes_checked": 63,
+    "subset_records_checked": 60,
+    "fixed_probe_records": 22,
+    "unique_proof_fingerprints": 104,
+    "external_negative_guard_invocations": {
+      "PQZK_BLNS": 2,
+      "ARGO_PADDED": 2,
+      "PQZK_BLNS_PADDED": 2,
+      "PQZK_BLNS_PADDED_NOCACHE": 1,
+      "ARGO_NATIVE": 2,
+      "ARGO_COMPACT": 2,
+      "PQZK_BLNS_COMPACT": 2,
+      "ARGO_PADDED_NOCACHE": 1
+    },
+    "frequency_snapshot_khz_range": [
+      799991,
+      4600066
+    ],
+    "temperature_snapshot_c_range": [
+      39.0,
+      43.0
+    ]
+  },
+  "full": {
+    "status": "PASS",
+    "errors": [],
+    "formal_rows": 7800,
+    "warmup_rows": 780,
+    "groups": 26,
+    "jobs": 390,
+    "artifact_hashes_checked": 63,
+    "subset_records_checked": 60,
+    "fixed_probe_records": 22,
+    "unique_proof_fingerprints": 8580,
+    "external_negative_guard_invocations": {
+      "PQZK_BLNS": 30,
+      "ARGO_PADDED": 30,
+      "PQZK_BLNS_PADDED": 30,
+      "PQZK_BLNS_PADDED_NOCACHE": 15,
+      "ARGO_NATIVE": 30,
+      "ARGO_COMPACT": 30,
+      "PQZK_BLNS_COMPACT": 30,
+      "ARGO_PADDED_NOCACHE": 15
+    },
+    "frequency_snapshot_khz_range": [
+      799975,
+      4600000
+    ],
+    "temperature_snapshot_c_range": [
+      38.0,
+      51.0
+    ]
+  }
+}

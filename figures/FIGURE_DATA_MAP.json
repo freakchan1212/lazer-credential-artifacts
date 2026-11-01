@@ -1,0 +1,104 @@
+{
+  "schema": "SUBMISSION-EXACT-FIGURES-20261101",
+  "figures": [
+    {
+      "name": "图1_声明复用与紧致关系",
+      "document": "manuscript.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "manuscript sections 2.1-2.2; no measured values"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "3b97ba71d2e99f4e473923de2857ec1128545e487dafbc37ef47fb3df4f84b06",
+      "pdf_sha256": "ab60dd032d3e9852f553150582a194a5126e2fc7c4d16c4e0fb030d6823b0075",
+      "png_sha256": "e167a10f145adc0752301e76cf7706ed30c5fa80202d5ddc063fa379297c083a"
+    },
+    {
+      "name": "图2_严格验证耗时",
+      "document": "manuscript.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/main_summary.csv; strict, n=600 per cell"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "bf5b39df495198a517b4577f970d4c4054fb6f53952094d8191da8161a4c2b31",
+      "pdf_sha256": "f357f6ef3d49283fa3094e82a14839b3bd20ce4ca2f2d10d78c156ecac269386",
+      "png_sha256": "a382b1a05fa175dd1c8fdf798dc678ad2dd91a6fde39659a7ab691dbe2feaef5"
+    },
+    {
+      "name": "图3_紧致化增量与区间",
+      "document": "manuscript.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/block_effects.csv; stratified bootstrap 25000, seed 20261020"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "3adeb83501b7176e80085d79cc88353bddd155ce0bb594ce723ce10c6991d0a8",
+      "pdf_sha256": "165e8afd9b0d3381c8a9cbe480b2d7a8550368eb03e101e993aafb66f96f9bf3",
+      "png_sha256": "63c951f95d57983ec31906dbc414fae108a54e30a319c88b1abd3908249bdc54"
+    },
+    {
+      "name": "图4_完整服务摊销曲线",
+      "document": "manuscript.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/reuse.csv; three lifetimes; mean and observed min/max; shared prefixes"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "af8fa7f71e432183a3697c6d6206d0c3cb85a6595e53a160bdc076f862da574d",
+      "pdf_sha256": "ebb2ad600191c9b957337595f7233a6b801e14b37fe552743e00b87dfdebe2da",
+      "png_sha256": "39fec52ed871274d3f5516c61dfbe4901373ea961fca7a6aa376b2f532bcc9fa"
+    },
+    {
+      "name": "图5_同披露数证明大小",
+      "document": "manuscript.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/k_sweep.csv; n=30 per k/variant; mean and observed range; 1 KB=1000 B"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "c6d7b46ef3f0c9a0d98e5c347a3eda811aaacf4b65a82af530b5b9ad0d11a57e",
+      "pdf_sha256": "143b7e99442c2a2e37c96ca7aa84ebf1add27763e2c2584db9a544334fa592fe",
+      "png_sha256": "1eb8f6d0c8d1349974d2f056cecf5e59eaf4de1a01e55c269faaadb605360d11"
+    },
+    {
+      "name": "图S1_回归与全部分块",
+      "document": "supplement.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/main_summary.csv",
+        "data/derived/block_effects.csv; positive white, negative hatched; no trimming"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "f469c883929c1186333c7a0e2a16736932349908a7de348ffaf0101b8e0283f8",
+      "pdf_sha256": "8ab29dfb6701ef1bd14e230e941c38bfdc80b973e5a142e4428ea3ea5bd6b440",
+      "png_sha256": "c8b9d832dae94930cae2a749189461feaac247e6e05dbd086a4ca9ef55ed21f2"
+    },
+    {
+      "name": "图S2_严格验证经验分布",
+      "document": "supplement.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/samples.csv; strict main; full ECDF, no smoothing"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "447d3d36c966dd55ebd82f6966edfb81045863806da1a9f92bce4a3747920412",
+      "pdf_sha256": "68f6dd362bf4cbbcb9c0fe163ad4cb06b49593bc331da7322379d4ddfe42b28e",
+      "png_sha256": "2cb829c05b68059ee7931182d1b1a47718b47ac5f61c900a66d87267a818da92"
+    },
+    {
+      "name": "图S3_完整服务摊销大图",
+      "document": "supplement.docx",
+      "source": "Exact SVG and PNG associated with the accompanying manuscript; vector PDF converted from the same SVG.",
+      "data": [
+        "data/derived/reuse.csv; three lifetimes; mean and observed min/max; shared prefixes"
+      ],
+      "svg_has_raster_images": false,
+      "svg_sha256": "0f9d0a160137113a24a01638024fb09e2ec335064cb182d40e3b40ebae6d8020",
+      "pdf_sha256": "7139d60671a07bdfbb6d62eb7384f0231c3a527c915d2985c5a0b7bf37e41ca5",
+      "png_sha256": "7ed41164014063f27b7993c8a1db9d280b79f9baaf30e4cdabcf8f704a1718d8"
+    }
+  ],
+  "main_data": "original n=600 strict batch; not current n=300 supplementary batch",
+  "pdf_conversion": "CairoSVG; paths and hatch patterns retained; no raster images"
+}

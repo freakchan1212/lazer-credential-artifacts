@@ -1,0 +1,81 @@
+--- V2/lazer/src/lnp-quad.c
++++ V3/lazer/src/lnp-quad.c
+@@ -235,11 +235,10 @@
+ 
+       poly_urandom_autostable (c, params->omega, params->log2omega, cseed, 0);
+ 
++      /* Direction 7a (V3A/V3): Lazy cs2 evaluation — only compute cs2 = c*s2 and y2 += cs2
++       * AFTER z1 passes rej1 (~56.9% of iterations reject on z1). */
+       polyvec_scale2 (cs1, c, s1);
+-      polyvec_scale2 (cs2, c, s2); // XXX correct
+       polyvec_add (y1, y1, cs1, 0);
+-      polyvec_add (y2, y2, cs2,
+-                   0); // XXX correct, XXX sample sign with bimodal ?
+ 
+       ASSERT_ERR (params->rej1 == 0 || params->rej1 == 1);
+       if (params->rej1)
+@@ -257,6 +256,11 @@
+               continue;
+             }
+         }
++
++      polyvec_scale2 (cs2, c, s2); // XXX correct
++      polyvec_add (y2, y2, cs2,
++                   0); // XXX correct, XXX sample sign with bimodal ?
++
+       ASSERT_ERR (params->rej2 == 0 || params->rej2 == 1 || params->rej2 == 2);
+       if (params->rej2)
+         {
+--- V2/lazer/src/poly.c
++++ V3/lazer/src/poly.c
+@@ -202,14 +202,45 @@
+   else
+     {
+ #endif
+-  INTVEC_T (tmp, polyring_get_deg (ring), 2 * a->nlimbs);
+-
+   _fromcrt (b); // XXX can also do this in crt dom
+ 
+   r->crt = 0;
+-  intvec_scale (tmp, a, _get_coeffvec_src (b));
+-  intvec_mod (r->coeffs, tmp, ring->q);
+-  intvec_redc (r->coeffs, r->coeffs, ring->q);
++  if (ring->q->nlimbs == 1 && !ring->q->neg && (uint64_t)ring->q->limbs[0] > 0
++      && (uint64_t)ring->q->limbs[0] <= (uint64_t)INT64_MAX && a->nlimbs == 1
++      && _get_coeffvec_src (b)->nlimbs == 1)
++    {
++      /* Direction 7b (V3): single-limb native __int128 modular scaling fast path.
++       * Reduce unsigned magnitudes modulo uq BEFORE applying sign bits (a->neg, belem->neg)
++       * so all 1-limb integers in [-(2^64 - 1), +(2^64 - 1)] (including 2^63) are 100% exact. */
++      const uint64_t uq = (uint64_t)ring->q->limbs[0];
++      const int64_t sq = (int64_t)uq;
++      const int64_t half_q = sq >> 1;
++      const uint64_t ua_mod = ((uint64_t)a->limbs[0]) % uq;
++      const int64_t sa = a->neg ? -(int64_t)ua_mod : (int64_t)ua_mod;
++      const unsigned int deg = polyring_get_deg (ring);
++      intvec_srcptr bcoeffs = _get_coeffvec_src (b);
++      unsigned int k;
++
++      for (k = 0; k < deg; k++)
++        {
++          int_srcptr belem = intvec_get_elem_src (bcoeffs, k);
++          const uint64_t ub_mod = ((uint64_t)belem->limbs[0]) % uq;
++          const int64_t sb = belem->neg ? -(int64_t)ub_mod : (int64_t)ub_mod;
++          int64_t rem = (int64_t)(((__int128)sa * (__int128)sb) % (__int128)sq);
++          if (rem > half_q)
++            rem -= sq;
++          else if (rem < -half_q)
++            rem += sq;
++          int_set_i64 (intvec_get_elem (r->coeffs, k), rem);
++        }
++    }
++  else
++    {
++      INTVEC_T (tmp, polyring_get_deg (ring), 2 * a->nlimbs);
++      intvec_scale (tmp, a, _get_coeffvec_src (b));
++      intvec_mod (r->coeffs, tmp, ring->q);
++      intvec_redc (r->coeffs, r->coeffs, ring->q);
++    }
+   //}
+ }
+ 

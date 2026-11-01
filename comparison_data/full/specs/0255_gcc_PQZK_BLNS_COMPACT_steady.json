@@ -1,0 +1,13 @@
+{
+  "compiler": "gcc",
+  "variant": "PQZK_BLNS_COMPACT",
+  "lifecycle": "steady",
+  "task": "main",
+  "round": 2,
+  "block": 5,
+  "sessions": 20,
+  "warmup": 2,
+  "verification_mode": "external_native",
+  "formal": true,
+  "id": "0255_gcc_PQZK_BLNS_COMPACT_steady"
+}

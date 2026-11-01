@@ -7,7 +7,7 @@ p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);a
 if out==ROOT or ROOT in out.parents:raise SystemExit('Choose an output directory outside this frozen package.')
 out.mkdir(parents=True,exist_ok=True)
 source=ROOT/'analysis/original_attachment2/independent_recompute.py'
-s=source.read_text();old="R=Path(__file__).resolve().parent.parent;B=R/'data';O=B/'independent_checks';O.mkdir(exist_ok=True);"
+s=source.read_text();old="R=Path(__file__).resolve().parents[2];B=R/'data';O=B/'independent_checks';O.mkdir(exist_ok=True);"
 assert s.count(old)==1
 s=s.replace(old,"R=ROOT;B=ROOT/'data';O=OUTPUT;O.mkdir(exist_ok=True);",1)
 exec(compile(s,str(source),'exec'),{'__file__':str(source),'ROOT':ROOT,'OUTPUT':out})

@@ -1,0 +1,2 @@
+
+COMMAND ["/usr/bin/x86_64-linux-gnu-gcc-11", "-shared", "-fPIC", "-O2", "/home/jolson/\u4e0b\u8f7d/LaZer_Argo_PQZK_20261031/results/dual_smoke_20261031_231328_653901/equivalence/fake_rng.c", "-o", "/home/jolson/\u4e0b\u8f7d/LaZer_Argo_PQZK_20261031/results/dual_smoke_20261031_231328_653901/equivalence/libfake_rng.so", "-ldl"]

@@ -1,12 +1,20 @@
 cff-version: 1.2.0
-message: "Please cite the associated article and this companion release when using these materials."
+message: "If you use these materials, please cite this software and the associated manuscript."
 type: software
-title: "面向重复出示与选择性披露的LaZer匿名凭证实现优化：代码与补充材料"
+title: "LaZer Anonymous Credential Implementation Optimization"
+version: "2026.11.01"
+date-released: 2026-11-01
 authors:
   - family-names: Chen
     given-names: Shuai
-    affiliation: "Jiangsu University of Science and Technology"
-version: paper-artifacts-20261028
-date-released: 2026-10-28
+    affiliation: "School of Computer Science, Jiangsu University of Science and Technology"
+    email: "241210704101@stu.just.edu.cn"
 repository-code: "https://github.com/freakchan1212/lazer-credential-artifacts"
-abstract: "Supplementary materials, implementation source code, figures, experimental data, and verification evidence accompanying the associated article."
+url: "https://github.com/freakchan1212/lazer-credential-artifacts"
+abstract: "Implementation code, supplementary materials, experimental records, figures and verification evidence for LaZer anonymous credential optimization in repeated presentation and selective disclosure. The package contains the original main experiment and separate cross-compiler and independently implemented comparison measurements."
+keywords:
+  - lattice-based cryptography
+  - anonymous credentials
+  - selective disclosure
+  - LaZer
+  - implementation optimization

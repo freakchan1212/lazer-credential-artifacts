@@ -1,11 +1,13 @@
 # 权利与第三方许可
 
-本次整理不更改原文件中的版权和许可，也不将整套材料统一声明为 MIT。
+本仓库保留各文件原有的版权与许可。第三方组件适用其随附许可证，主要入口如下：
 
-- LaZer：见 `code/source/project/lazer/LICENSE`。
-- Labrador：见 `code/source/project/lazer/src/labrador/LICENSE`。
-- HEXL：见 `code/source/project/lazer/third_party/hexl-development/LICENSE`。
-- cpu_features：见 `code/source/project/vendor/cpu_features/LICENSE`。
-- 其他随附第三方组件按其文件中的许可与版权说明执行。
+- LaZer：`code/source/project/lazer/LICENSE`。
+- Labrador：`code/source/project/lazer/src/labrador/LICENSE`。
+- HEXL：`code/source/project/lazer/third_party/hexl-development/LICENSE`。
+- cpu_features：`code/source/project/vendor/cpu_features/LICENSE`。
+- PQZK-BLNS：`comparison/vendor/pqzk-blns/LICENSE`。
+- Argo及其依赖：对应源码归档中的版权和许可文件。
+- 绘图字体：`tools/fonts/`内的许可文件。
 
-作者新增代码、论文、补充材料、数据和图的统一再利用授权尚未在输入材料中明确。本包不代作者授予新许可；公开可访问不等于取得再分发或修改授权。正式发布时可分别确定自有代码与文档/数据许可，并保留第三方要求。`CITATION.cff` 仅提供引用元数据，不授予许可。
+作者自有实现、文稿、补充材料、数据和图未另行附加统一开放许可证。引用元数据不构成新的许可授权；第三方组件的授权不自动扩展到其他材料。

@@ -1,0 +1,40 @@
+{
+  "lazer/src/lazer.c": {
+    "original_sha256": "1651c21f52f7f453a783a46c572714bcf3f3bd7173989d2cee5ab0297105140b",
+    "patched_sha256": "52b5e214baf1609ae22bf2bb2d2a70762398e24611ae3dfc06db1ac3872aedee",
+    "variant": "B1"
+  },
+  "lazer/src/lin-proofs.c": {
+    "original_sha256": "db8aceefdf69c00641a8d64e233c6225ad89d5a0f09b9c11a51d30e59ca3bc1f",
+    "patched_sha256": "4d30b38339e3e917b8a620da4a6b6d10f1583577152ddad025bb1fc0218c47be",
+    "variant": "B1"
+  },
+  "lazer/src/lnp-quad.c": {
+    "original_sha256": "d72855a2785d1674699b845238c989725737997f7e917da50397eec3e3d15f06",
+    "patched_sha256": "55f0e20bf0f537d104158b80a649def5b5bede3b96ddeca13bb80da1c51073ed",
+    "variant": "B1"
+  },
+  "lazer/third_party/Falcon-impl-20211101/sign.c": {
+    "original_sha256": "79ed0e185b757459ffc8292aed1e79d71efd6a082600d8ba0984850eb039ed9a",
+    "patched_sha256": "86a8c3564936e1be72562d6a8d0c132fb5288335915a3d8a1895052133740488",
+    "archive_member": "Falcon-impl-20211101/sign.c"
+  },
+  "lazer/src/baseline_hooks.h": {
+    "added_sha256": "ccafa027b4bf071b6d510d381d75c23a36f1a7efc1c260cdc1a70f86e5221c11"
+  },
+  "lazer/src/blindsig.c": {
+    "original_sha256": "22f1e1ce881c70d86d107ac714d042704180243af780507e9291b73f0701265f",
+    "patched_sha256": "f2ae41bcadbfd4c1589c37ca7a9bd0657793f4ff30db9211616269dac10bd645",
+    "variant": "B1"
+  },
+  "lazer/python/lazer.py": {
+    "original_sha256": "696e01b9bf9c48db9875b73017889810024eb72375f3926fe73eabac56f69f21",
+    "patched_sha256": "95de7fd3b61984f5127441cabe057608b3fddaec173075db1b2be396f95f74d9",
+    "variant": "B1"
+  },
+  "lazer/python/anon_cred/anon_cred.py": {
+    "original_sha256": "57cb1d1f17fefa4a5856eba08a261b5fec4c20c59dc9089765f22716c3b7ca78",
+    "patched_sha256": "33f3f2f566f7ba86927e5c2be3a5154cd70e801e254eaf2b3a1d090cc941711b",
+    "variant": "B1"
+  }
+}

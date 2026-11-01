@@ -1,0 +1,13 @@
+{
+  "compiler": "clang",
+  "variant": "PQZK_BLNS",
+  "lifecycle": "steady",
+  "task": "main",
+  "round": 1,
+  "block": 1,
+  "sessions": 20,
+  "warmup": 2,
+  "verification_mode": "external_native",
+  "formal": true,
+  "id": "0001_clang_PQZK_BLNS_steady"
+}

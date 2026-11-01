@@ -1,0 +1,33 @@
+=================================================================
+==5==ERROR: AddressSanitizer: attempting double-free on 0x52f000000400 in thread T0:
+    #0 0x7fb8900501f8 in operator delete[](void*) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:155
+    #1 0x56214d985db5 in I_VerCred(unsigned char**, unsigned char const*, NTL::Vec<NTL::Vec<NTL::Mat<NTL::zz_pX> > > const&, NTL::Mat<NTL::zz_p> const&, unsigned char const*, ISK_t const&, NTL::Vec<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&, NTL::Vec<unsigned long> const&, RHO1_t&) /workspace/scratch/19bb2b6505c9/work/external_asan/Issuer.cc:313
+    #2 0x56214d9c69cc in issue /workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker.cc:35
+    #3 0x56214d9c77ac in main /workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker.cc:52
+    #4 0x7fb88f6e11c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 274eec488d230825a136fa9c4d85370fed7a0a5e)
+    #5 0x7fb88f6e128a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 274eec488d230825a136fa9c4d85370fed7a0a5e)
+    #6 0x56214d8feb84 in _start (/workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker+0xdb84) (BuildId: 71e38d8ba0a8b4c5409c581bc035f8fd5fd92735)
+
+0x52f000000400 is located 0 bytes inside of 52609-byte region [0x52f000000400,0x52f00000d181)
+freed by thread T0 here:
+    #0 0x7fb8900501f8 in operator delete[](void*) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:155
+    #1 0x56214d92560d in Verify_Com(unsigned char const*, NTL::Vec<NTL::Mat<NTL::zz_pX> > const&, unsigned char const*, NTL::Mat<NTL::zz_p> const&, NTL::Vec<NTL::zz_p> const&, NTL::ZZ const&, unsigned char**, NTL::Vec<unsigned long> const&) /workspace/scratch/19bb2b6505c9/work/external_asan/Com.cc:1000
+    #2 0x56214d985c88 in I_VerCred(unsigned char**, unsigned char const*, NTL::Vec<NTL::Vec<NTL::Mat<NTL::zz_pX> > > const&, NTL::Mat<NTL::zz_p> const&, unsigned char const*, ISK_t const&, NTL::Vec<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&, NTL::Vec<unsigned long> const&, RHO1_t&) /workspace/scratch/19bb2b6505c9/work/external_asan/Issuer.cc:308
+    #3 0x56214d9c69cc in issue /workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker.cc:35
+    #4 0x56214d9c77ac in main /workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker.cc:52
+    #5 0x7fb88f6e11c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 274eec488d230825a136fa9c4d85370fed7a0a5e)
+    #6 0x7fb88f6e128a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 274eec488d230825a136fa9c4d85370fed7a0a5e)
+    #7 0x56214d8feb84 in _start (/workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker+0xdb84) (BuildId: 71e38d8ba0a8b4c5409c581bc035f8fd5fd92735)
+
+previously allocated by thread T0 here:
+    #0 0x7fb89004f6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x56214d9186f3 in Prove_Com(unsigned char**, unsigned char const*, NTL::Vec<NTL::Mat<NTL::zz_pX> > const&, unsigned char const*, NTL::Mat<NTL::zz_p> const&, NTL::Vec<NTL::zz_p> const&, NTL::ZZ const&, NTL::Vec<NTL::ZZ> const&, NTL::Vec<unsigned long> const&) /workspace/scratch/19bb2b6505c9/work/external_asan/Com.cc:243
+    #2 0x56214d951a2f in H_VerCred1(RHO1_t&, STATE_t&, unsigned char const*, NTL::Vec<NTL::Vec<NTL::Mat<NTL::zz_pX> > > const&, unsigned char const*, NTL::Vec<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, NTL::Vec<unsigned long> const&) /workspace/scratch/19bb2b6505c9/work/external_asan/Holder.cc:282
+    #3 0x56214d9c6714 in issue /workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker.cc:32
+    #4 0x56214d9c77ac in main /workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker.cc:52
+    #5 0x7fb88f6e11c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 274eec488d230825a136fa9c4d85370fed7a0a5e)
+    #6 0x7fb88f6e128a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 274eec488d230825a136fa9c4d85370fed7a0a5e)
+    #7 0x56214d8feb84 in _start (/workspace/scratch/19bb2b6505c9/work/external_asan/revision_worker+0xdb84) (BuildId: 71e38d8ba0a8b4c5409c581bc035f8fd5fd92735)
+
+SUMMARY: AddressSanitizer: double-free ../../../../src/libsanitizer/asan/asan_new_delete.cpp:155 in operator delete[](void*)
+==5==ABORTING

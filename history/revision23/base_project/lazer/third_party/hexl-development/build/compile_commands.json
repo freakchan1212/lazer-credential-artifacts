@@ -1,0 +1,57 @@
+[
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-mult-mod.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-mult-mod.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-mult-mod.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-reduce-mod.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-reduce-mod.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-reduce-mod.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-sub-mod.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-sub-mod.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-sub-mod.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-add-mod.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-add-mod.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-add-mod.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-fma-mod.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-fma-mod.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-fma-mod.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-cmp-add.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-cmp-add.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-cmp-add.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/eltwise/eltwise-cmp-sub-mod.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-cmp-sub-mod.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/eltwise/eltwise-cmp-sub-mod.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/ntt/ntt-internal.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/ntt/ntt-internal.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/ntt/ntt-internal.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/ntt/ntt-radix-2.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/ntt/ntt-radix-2.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/ntt/ntt-radix-2.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/ntt/ntt-radix-4.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/ntt/ntt-radix-4.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/ntt/ntt-radix-4.cpp"
+},
+{
+  "directory": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/build/hexl",
+  "command": "/home/jolson/下载/LaZer_E4_Supplement/project/.compat-bin/g++ -DHEXL_HAS_AVX256 -DSTACK_LINE_READER_BUFFER_SIZE=1024 -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl -I/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/include -isystem /home/jolson/下载/LaZer_E4_Supplement/project/.deps/include/cpu_features -O3 -DNDEBUG -fPIC -Wall -Wconversion -Wshadow -pedantic -Wextra -Wno-unknown-pragmas -march=native -O3 -fomit-frame-pointer -Wno-sign-conversion -Wno-implicit-int-conversion -Wno-unknown-warning -Wno-unknown-warning-option -std=c++17 -o CMakeFiles/hexl.dir/number-theory/number-theory.cpp.o -c /home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/number-theory/number-theory.cpp",
+  "file": "/home/jolson/下载/LaZer_E4_Supplement/project/lazer/third_party/hexl-development/hexl/number-theory/number-theory.cpp"
+}
+]

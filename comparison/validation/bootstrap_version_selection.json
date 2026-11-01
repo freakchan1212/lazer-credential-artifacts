@@ -1,0 +1,21 @@
+{
+  "scope": "Mocked package-command and interpreter selection; not a live Ubuntu22 apt installation",
+  "tests": [
+    {
+      "abi": "3.10",
+      "status": "PASS",
+      "selected_packages": [
+        "python3.10-dev",
+        "python3.10-venv"
+      ]
+    },
+    {
+      "abi": "3.12",
+      "status": "PASS",
+      "selected_packages": [
+        "python3.12-dev",
+        "python3.12-venv"
+      ]
+    }
+  ]
+}

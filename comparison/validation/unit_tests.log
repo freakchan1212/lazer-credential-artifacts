@@ -1,0 +1,13 @@
+test_complete_source_audit (test_revision.RevisionTests.test_complete_source_audit) ... 双对照源码检查通过：Argo、pqzk-blns，可进入构建和运行验证。
+参数及安全等级差异保存在： /tmp/tmp_65qqafc/audit.json
+ok
+test_crossblock_reuse (test_revision.RevisionTests.test_crossblock_reuse) ... ok
+test_keep_regression_blocks (test_revision.RevisionTests.test_keep_regression_blocks) ... ok
+test_legacy_subset_plan (test_revision.RevisionTests.test_legacy_subset_plan) ... ok
+test_reject_bad_worker (test_revision.RevisionTests.test_reject_bad_worker) ... ok
+test_two_baseline_plan (test_revision.RevisionTests.test_two_baseline_plan) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.018s
+
+OK

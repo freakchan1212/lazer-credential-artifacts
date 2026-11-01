@@ -1,0 +1,80 @@
+{
+  "files": [
+    {
+      "path": "PROVENANCE.json",
+      "status": "modified",
+      "sha256": "9de4f17fe12f87816f3aab478f70a16e30f0a41220ee61e03d627d608481d9a1"
+    },
+    {
+      "path": "README_ZH.md",
+      "status": "modified",
+      "sha256": "4d27d2c0db2276b82cb5bb692df792bd18afaa17098e14e3e8c08b65b71711de"
+    },
+    {
+      "path": "RUN_UBUNTU.sh",
+      "status": "added",
+      "sha256": "3dbecb3e253374d664db84572be919ac07072710de892ea0a4d315532b244f30"
+    },
+    {
+      "path": "VALIDATION.json",
+      "status": "modified",
+      "sha256": "880ef02fa6e385e4ff8b9f523119188729171e1a689ede422ea7ae7ab1f3914e"
+    },
+    {
+      "path": "audit_two_baselines.py",
+      "status": "added",
+      "sha256": "2649d713ba7f792aefdfe428866c6ca6433c3d4a1fd0dddb258065d89126a76e"
+    },
+    {
+      "path": "build_revision.py",
+      "status": "modified",
+      "sha256": "847559aea00182a8a245d40bc25023995b9c7163859d63e4b30ddbda0aaffa38"
+    },
+    {
+      "path": "external_worker.cc",
+      "status": "modified",
+      "sha256": "604942e53dc2b212a627e9f8182768a44eb0c75b644ac161d046a13439d7836e"
+    },
+    {
+      "path": "revision_common.py",
+      "status": "modified",
+      "sha256": "34c5b86528176810cd37856c0999edceebc1ed590a8a87a7badd16a90b66956d"
+    },
+    {
+      "path": "run_reviewed.py",
+      "status": "modified",
+      "sha256": "37193e8c9a525362bf5a67212d7c00389f6e2c2340de8e3ae193f7e95b1b9aa8"
+    },
+    {
+      "path": "run_revision.py",
+      "status": "modified",
+      "sha256": "4c9defb1f6c39039313432fe867dc1d0b403843185af6296b28fd976309e11a9"
+    },
+    {
+      "path": "run_two_baselines.py",
+      "status": "added",
+      "sha256": "bf8710ea4e8c5ead7730249821d225d04dec8947a2e0ac94260fc8d77724a0e0"
+    },
+    {
+      "path": "summarize_revision.py",
+      "status": "modified",
+      "sha256": "e62a378382bbfadfaeb158c04a855e4490a36b9784e6a064ff3330805ec9668c"
+    },
+    {
+      "path": "test_revision.py",
+      "status": "modified",
+      "sha256": "7ed6ec586d41ff0ad66afbb90e46da1cb5f23d624f774ce0f5798ea7c0a8c545"
+    },
+    {
+      "path": "完整性检查与修改说明.md",
+      "status": "added",
+      "sha256": "1c44167e86311fdf9d655b5d16fb9ec8d2ebed7e775eee6a6d8a9ed95a67333a"
+    }
+  ],
+  "removed_scope": "Unselected candidate source, checks, quarantined models and old diagnostic material",
+  "base_project_unchanged": true,
+  "argo_flint_archives_unchanged": true,
+  "pqzk_upstream_directory_unchanged": true,
+  "bootstrap_fix": "Version-specific Python dev/venv packages selected from the actual system interpreter ABI; experiment code/parameters unchanged.",
+  "submission_documentation_fix": "Formal repository paths, reproduction instructions and comparison scope; experimental source and data unchanged."
+}

@@ -1,0 +1,32 @@
+{
+  "manuscript.docx": {
+    "source_sha256": "b4e91d667e65dd050a347cf83b77688a4f51954653b28079f2badbcbdb2572e4",
+    "output_sha256": "208f166acd1b495877c3edcde9a2c9ac405a0628d842ead7ccccf1f21110cb35",
+    "equations": 179,
+    "equations_byte_preserved": true,
+    "math_xml_sha256": "95e39e0926016922f77a22451f8f2d7ffed4b62a30461cc9862a7500128329be",
+    "media": 10,
+    "media_byte_preserved": true,
+    "changed_parts": [
+      "word/document.xml",
+      "word/_rels/document.xml.rels"
+    ],
+    "valid_REF_fields": 47,
+    "revision_input_sha256": "4e9bd42fe4b18aa9b34eb56af3b570b3e0ac3d102761342d4f65cecb0cadb08a"
+  },
+  "supplement.docx": {
+    "source_sha256": "bab1f5ed6116c7c1632e5bc52aeb31c60cb5916011083e841ce54160d7fd081b",
+    "output_sha256": "33cdd10d0c1af117d48d0d6721318133d7e78b6ede85b6545d0d9b01e2bf4ac6",
+    "equations": 29,
+    "equations_byte_preserved": true,
+    "math_xml_sha256": "7f88239592f6343a081ebcd92fc701e3a7989a06ad7c4f92a00532fd2a4c47e1",
+    "media": 6,
+    "media_byte_preserved": true,
+    "changed_parts": [
+      "word/document.xml",
+      "word/_rels/document.xml.rels"
+    ],
+    "valid_REF_fields": 24,
+    "revision_input_sha256": "cbc4f73add590213ceb3eb6e9c529e4b165cc4e10a92624a579e9d1e4ad1aa10"
+  }
+}

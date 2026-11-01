@@ -1,0 +1,124 @@
+{
+  "mode": "pilot",
+  "requested_sessions": 30,
+  "warmup": 1,
+  "created_at_utc": "2026-10-14T11:41:08.347461+00:00",
+  "upstream_commit": "10eafeca4cd53ff4fc54193dce904dbd0026fefd",
+  "disclosure_blocks": [
+    0,
+    4,
+    5
+  ],
+  "hidden_blocks": [
+    1,
+    2,
+    3,
+    6,
+    7
+  ],
+  "block_bits": 64,
+  "message_bits": 512,
+  "ring_degree": 64,
+  "modulus": 12289,
+  "p1_relation_shape": [
+    8,
+    24
+  ],
+  "p2_relation_shape": [
+    8,
+    48
+  ],
+  "semantics": "Each recorded trial creates fresh user/issuer/verifier proof states, masks a fresh 64-byte binary message, issues one credential and shows it once. One issuer keypair is shared across trials. No authentication nonce binding has been added.",
+  "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+  "python_executable": "/home/jolson/下载/BLNS_LAZER_BASELINE_20261014/.venv/bin/python3",
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+  "accepted": 30,
+  "status": "NORMAL_PATH_PASSED",
+  "keygen_ms": 5.651809,
+  "metrics": {
+    "user_init_ms": {
+      "mean": 20.992407466666666,
+      "median": 21.155331,
+      "min": 19.562181,
+      "max": 21.62587,
+      "p95_nearest_rank": 21.467776
+    },
+    "issuer_init_ms": {
+      "mean": 7.271644866666667,
+      "median": 7.3148859999999996,
+      "min": 6.635405,
+      "max": 7.586555,
+      "p95_nearest_rank": 7.55784
+    },
+    "verifier_init_ms": {
+      "mean": 13.757932266666666,
+      "median": 13.8232775,
+      "min": 12.779518,
+      "max": 14.147795,
+      "p95_nearest_rank": 14.123923
+    },
+    "mask_and_p1_prove_ms": {
+      "mean": 38.39684976666667,
+      "median": 35.7109985,
+      "min": 23.784683,
+      "max": 100.495196,
+      "p95_nearest_rank": 63.377469
+    },
+    "p1_verify_and_issue_ms": {
+      "mean": 16.905384633333334,
+      "median": 17.045988,
+      "min": 15.62699,
+      "max": 17.385247,
+      "p95_nearest_rank": 17.378731
+    },
+    "p2_prove_ms": {
+      "mean": 75.43223326666667,
+      "median": 69.5432385,
+      "min": 45.080519,
+      "max": 178.617524,
+      "p95_nearest_rank": 144.27945
+    },
+    "p2_verify_ms": {
+      "mean": 33.09160073333334,
+      "median": 33.469066999999995,
+      "min": 30.538208,
+      "max": 33.794043,
+      "p95_nearest_rank": 33.720669
+    },
+    "issue_flow_ms": {
+      "mean": 55.302234399999996,
+      "median": 52.885954,
+      "min": 40.862296,
+      "max": 117.708213,
+      "p95_nearest_rank": 80.38201
+    },
+    "show_flow_ms": {
+      "mean": 108.523834,
+      "median": 102.9569355,
+      "min": 75.618727,
+      "max": 209.864527,
+      "p95_nearest_rank": 177.664209
+    },
+    "masked_request_bytes": {
+      "mean": 20414.733333333334,
+      "median": 20414.0,
+      "min": 20389,
+      "max": 20442,
+      "p95_nearest_rank": 20431
+    },
+    "blind_credential_bytes": {
+      "mean": 1306.5333333333333,
+      "median": 1306.0,
+      "min": 1300,
+      "max": 1316,
+      "p95_nearest_rank": 1312
+    },
+    "presentation_proof_bytes": {
+      "mean": 29112.233333333334,
+      "median": 29111.0,
+      "min": 29079,
+      "max": 29147,
+      "p95_nearest_rank": 29144
+    }
+  }
+}

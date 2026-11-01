@@ -1,0 +1,2 @@
+
+COMMAND ["/home/jolson/\u4e0b\u8f7d/LaZer_Revision23/.venv/bin/python", "/home/jolson/\u4e0b\u8f7d/LaZer_Revision23/lazer_worker.py", "--project", "/home/jolson/\u4e0b\u8f7d/LaZer_Revision23/builds/gcc/B1", "--spec", "/home/jolson/\u4e0b\u8f7d/LaZer_Revision23/results/rev23_full_20261030_170135/equivalence/gcc_B1_1.spec.json", "--out", "/home/jolson/\u4e0b\u8f7d/LaZer_Revision23/results/rev23_full_20261030_170135/equivalence/gcc_B1_1.jsonl", "--attestation", "/home/jolson/\u4e0b\u8f7d/LaZer_Revision23/results/rev23_full_20261030_170135/equivalence/gcc_B1_1.loaded.json"]

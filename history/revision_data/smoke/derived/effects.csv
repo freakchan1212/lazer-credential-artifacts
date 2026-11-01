@@ -1,0 +1,13 @@
+compiler,lifecycle,base,target,blocks,reduction_pct,bootstrap_low_pct,bootstrap_high_pct,improved_blocks,K_vs_prove_difference_correlation,note
+gcc,steady,B1,G3,1,8.842508367057933,8.842508367057933,8.842508367057933,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+gcc,steady,B1,C3,1,41.38229815805964,41.38229815805964,41.38229815805964,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+gcc,steady,G3,C3,1,35.69623210128198,35.69623210128198,35.69623210128198,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+gcc,fresh,B1,G3,1,9.456991787283764,9.456991787283764,9.456991787283764,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+gcc,fresh,B1,C3,1,2.1300001904308585,2.1300001904308585,2.1300001904308585,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+gcc,fresh,G3,C3,1,-8.09227762748872,-8.09227762748872,-8.09227762748872,0,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+clang,steady,B1,G3,1,19.92395582274059,19.92395582274059,19.92395582274059,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+clang,steady,B1,C3,1,23.68667276402222,23.68667276402222,23.68667276402222,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+clang,steady,G3,C3,1,4.698929598660417,4.698929598660417,4.698929598660417,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+clang,fresh,B1,G3,1,1.6956122057175338,1.6956122057175338,1.6956122057175338,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+clang,fresh,B1,C3,1,7.547607322158722,7.547607322158722,7.547607322158722,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches
+clang,fresh,G3,C3,1,5.9529337883548195,5.9529337883548195,5.9529337883548195,1,,descriptive association; no causal cache/retry attribution; CI conditional on measured batches

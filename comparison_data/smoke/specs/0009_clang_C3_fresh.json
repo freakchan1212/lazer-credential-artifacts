@@ -1,0 +1,13 @@
+{
+  "compiler": "clang",
+  "variant": "C3",
+  "lifecycle": "fresh",
+  "task": "main",
+  "round": 1,
+  "block": 1,
+  "sessions": 2,
+  "warmup": 2,
+  "verification_mode": "strict",
+  "formal": true,
+  "id": "0009_clang_C3_fresh"
+}

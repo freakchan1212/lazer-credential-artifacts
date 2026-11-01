@@ -1,0 +1,8 @@
+{
+  "measurements": "COMPLETE",
+  "formal_sessions": 28,
+  "reviewer2": "MEASURED",
+  "reviewer3": "NATIVE_CONFIG_REFERENCE_MEASURED",
+  "security_equivalence_established": false,
+  "performance_platform": "see environment_start.json"
+}

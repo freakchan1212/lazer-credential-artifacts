@@ -1,0 +1,279 @@
+--- B1/lazer/src/lin-proofs.c
++++ V0/lazer/src/lin-proofs.c
+@@ -2878,11 +2878,11 @@
+         }
+     }
+ 
+-  if (Rq->q->nlimbs == 1 && 1) // XXX add condition on q
+-    {
+-      const limb_t sq = Rq->q->limbs[0];
+-      __int128 svR[lambda * nprime * d];
+-      __int128 *sacc;
++  if (Rq->q->nlimbs == 1 && Rq->q->limbs[0] < (1ULL << 55))
++    {
++      const int64_t sq = (int64_t)Rq->q->limbs[0];
++      int64_t svR[lambda * nprime * d];
++      int64_t *sacc;
+       int64_t schal;
+ 
+       memset (&svR, 0, sizeof (svR));
+@@ -2895,20 +2895,11 @@
+             {
+               chal = intmat_get_elem (V, k, i);
+               schal = int_get_i64 (chal);
++              sacc = svR + (k * nprime * d);
+ 
+               for (j = 0; j < nprime * d; j++)
+                 {
+-                  if (Rprimei[j] == 0)
+-                    {
+-                    }
+-                  else
+-                    {
+-                      ASSERT_ERR (Rprimei[j] == 1 || Rprimei[j] == -1);
+-
+-                      sacc = svR + (k * nprime * d) + j;
+-
+-                      *sacc += schal * Rprimei[j];
+-                    }
++                  sacc[j] += schal * (int64_t)Rprimei[j];
+                 }
+             }
+         }
+@@ -2917,7 +2908,7 @@
+         {
+           for (j = 0; j < nprime * d; j++)
+             {
+-              coeff2 = intmat_get_elem (vR_, k, j); // XXX correct
++              coeff2 = intmat_get_elem (vR_, k, j);
+               int_set_i64 (coeff2, svR[(k * nprime * d) + j] % sq);
+             }
+         }
+@@ -3281,11 +3272,11 @@
+         }
+     }
+ 
+-  if (Rq->q->nlimbs == 1 && 1) // XXX add condition on q
+-    {
+-      const limb_t sq = Rq->q->limbs[0];
+-      __int128 svR[lambda * nex * d];
+-      __int128 *sacc;
++  if (Rq->q->nlimbs == 1 && Rq->q->limbs[0] < (1ULL << 55))
++    {
++      const int64_t sq = (int64_t)Rq->q->limbs[0];
++      int64_t svR[lambda * nex * d];
++      int64_t *sacc;
+       int64_t schal;
+ 
+       memset (&svR, 0, sizeof (svR));
+@@ -3298,20 +3289,11 @@
+             {
+               chal = intmat_get_elem (V, k, i);
+               schal = int_get_i64 (chal);
++              sacc = svR + (k * nex * d);
+ 
+               for (j = 0; j < nex * d; j++)
+                 {
+-                  if (Ri[j] == 0)
+-                    {
+-                    }
+-                  else
+-                    {
+-                      ASSERT_ERR (Ri[j] == 1 || Ri[j] == -1);
+-
+-                      sacc = svR + (k * nex * d) + j;
+-
+-                      *sacc += schal * Ri[j];
+-                    }
++                  sacc[j] += schal * (int64_t)Ri[j];
+                 }
+             }
+         }
+@@ -3320,7 +3302,7 @@
+         {
+           for (j = 0; j < nex * d; j++)
+             {
+-              coeff2 = intmat_get_elem (vR_, k, j); // XXX correct
++              coeff2 = intmat_get_elem (vR_, k, j);
+               int_set_i64 (coeff2, svR[(k * nex * d) + j] % sq);
+             }
+         }
+--- B1/lazer/src/lnp-quad.c
++++ V0/lazer/src/lnp-quad.c
+@@ -148,6 +148,10 @@
+   rng_init (rngstate, seed, 0);
+   rng_urandom (rngstate, yseed, 32);
+ 
++  /* Optimization 1 (P0): Hoist invariant R2 * s outside rejection sampling loop */
++  polyvec_mulsparse (tmp, R2, s);
++  polyvec_fromcrt (tmp);
++
+   dom = 0;
+   while (1)
+     {
+@@ -184,14 +188,12 @@
+ 
+       polyvec_fromcrt (y);
+ 
+-      /* g1 */
++      /* g1 (tmp = R2 * s is already precomputed outside the rejection loop) */
+ 
+       polyvec_dot2 (g1, r1, y);
+       polyvec_mulsparse (R2y, R2, y);
+       polyvec_fromcrt (R2y); // reduce XXX
+       poly_adddot (g1, s, R2y, 0);
+-      polyvec_mulsparse (tmp, R2, s);
+-      polyvec_fromcrt (tmp); // reduce XXX
+       poly_adddot (g1, y, tmp, 0);
+       poly_fromcrt (g1);
+ 
+--- B1/lazer/python/anon_cred/anon_cred.py
++++ V0/lazer/python/anon_cred/anon_cred.py
+@@ -49,6 +49,10 @@
+ 
+ 
+ AR.redc(); AM.redc(); ATAU.redc(); B1.redc()
++A_P1_STATIC = polymat_t(RING, 8, 24, [AR, AM])
++
++
++AR.redc(); AM.redc(); ATAU.redc(); B1.redc()
+ 
+ 
+ class user_t:
+@@ -58,6 +62,9 @@
+         self._B2_h2 = falcon_decode_pk(pk,RING)
+         self.p1_prover = lin_prover_state_t(P1PP, lib.get_params("p1_param"))
+         self.p2_prover = lin_prover_state_t(P2PP, lib.get_params("p2_param"))
++        self.p1_prover.set_statement_A(A_P1_STATIC)
++        self._p2_cached_pub_key = None
++        self._verified_blindsig_cache = None
+ 
+     def maskmsg(self, msg: bytes):
+         m = polyvec_t(RING,8,msg)
+@@ -69,11 +76,10 @@
+ 
+         # prove [Ar,Am]*(r,m) + (-t) = 0
+         # as PoK(w): Aw + u = 0
+-        A = polymat_t(RING, 8, 24, [AR, AM])
+         u = polyvec_t(RING, 8, [-t])
+         w = polyvec_t(RING, 24, [r, m])
+    
+-        self.p1_prover.set_statement(A, u)
++        self.p1_prover.set_statement_t(u)
+         self.p1_prover.set_witness(w)
+         
+         proof = self.p1_prover.prove()
+@@ -87,11 +93,14 @@
+         # save randomness and message
+         self.r = r
+         self.m = m
++        self._verified_blindsig_cache = None
+         # return masked message t,p1enc
+         return tenc + proof
+ 
+     def verify_blindsig(self, blindsig: bytes):
+-        """BLNS23 Fig. 19 H2 check (B1 uncached): decode and validate (tau, s1, s2) from issuer."""
++        """BLNS23 Fig. 19 H2 check: decode and validate (tau, s1, s2) from issuer without mutating self.B2."""
++        if self._verified_blindsig_cache is not None and self._verified_blindsig_cache[0] == blindsig:
++            return self._verified_blindsig_cache[1:]
+         tau, s1, s2 = bytes(64), polyvec_t(RING,8), polyvec_t(RING,8)
+         try:
+             coder = coder_t()
+@@ -112,6 +121,7 @@
+             rhs = AR * self.r.copy() + AM * self.m.copy() + ATAU * tau_.copy()
+             if lhs != rhs:
+                 raise InvalidBlindSig("Blind signature linear relation check failed.")
++        self._verified_blindsig_cache = (blindsig, tau_, s1, s2)
+         return tau_, s1, s2
+ 
+     def sign(self, blindsig: bytes, pub_mvec: list):
+@@ -122,7 +132,6 @@
+         # prove [Ar,Atau,-B1,-B2]*(r,tau,s1,s2) + Am*m = 0
+         # as PoK(w): Aw + u = 0
+         m_priv=self.m.zero_out_pols(pub_mvec)
+-        AM_priv=AM.zero_out_cols(pub_mvec)
+         if len(pub_mvec)==0:
+             u=polyvec_t(RING,8)
+         else:
+@@ -130,10 +139,15 @@
+             AM_pub=AM.get_col_list(pub_mvec)
+             u=polyvec_t(RING, 8, [AM_pub * m_pub])
+ 
+-        A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++        pub_key = tuple(pub_mvec)
++        if self._p2_cached_pub_key != pub_key:
++            AM_priv=AM.zero_out_cols(pub_mvec)
++            A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++            self.p2_prover.set_statement_A(A)
++            self._p2_cached_pub_key = pub_key
++
+         w = polyvec_t(RING, 48, [self.r, tau_, s1, s2, m_priv])
+-
+-        self.p2_prover.set_statement(A, u)
++        self.p2_prover.set_statement_t(u)
+         self.p2_prover.set_witness(w)
+         proof = self.p2_prover.prove()
+ 
+@@ -144,6 +158,7 @@
+     def __init__(self, pk: falcon_pkenc, sk: falcon_skenc):
+         self.sk = sk
+         self.p1_verifier = lin_verifier_state_t(P1PP, lib.get_params("p1_param"))
++        self.p1_verifier.set_statement_A(A_P1_STATIC)
+ 
+     def sign(self, masked_msg: bytes, strict: bool = False):
+         # decode masked message
+@@ -157,11 +172,10 @@
+             raise InvalidMaskedMsg
+         
+         # verify proof for PoK(w): Aw + u = 0
+-        A = polymat_t(RING, 8, 24, [AR, AM])
+         u = polyvec_t(RING, 8, [-t])
+         proof = masked_msg[tlen:]
+ 
+-        self.p1_verifier.set_statement(A, u)
++        self.p1_verifier.set_statement_t(u)
+         try:
+             self.p1_verifier.verify(proof, strict=strict)
+         except VerificationError:
+@@ -173,6 +187,7 @@
+ 
+         # preimage sampling
+         s1, s2 = falcon_preimage_sample(self.sk, ATAU * tau + t,RING)
++        #s1, s2 = falcon_preimage_sample(self.sk, ATAU * tau + t)
+ 
+         # encode blindsig tau,s1,s2
+         coder = coder_t()
+@@ -190,6 +205,7 @@
+         self.B2 = falcon_decode_pk(pk,RING)
+         self.B2.redc()
+         self.p2_verifier = lin_verifier_state_t(P2PP, lib.get_params("p2_param"))
++        self._p2_cached_pub_key = None
+ 
+     #the private part should already be zeroed out in pub_msg 
+     def verify(self, pub_msg: bytes, pub_mvec:list, sig: bytes, strict: bool = False):
+@@ -204,7 +220,6 @@
+                     raise InvalidSignature("Undisclosed attribute slot in pub_msg is non-zero.")
+         pub_mvec = list(dict.fromkeys(pub_mvec))
+         m = polyvec_t(RING, 8, pub_msg)
+-        AM_priv=AM.zero_out_cols(pub_mvec)
+         if len(pub_mvec)==0:
+             u=polyvec_t(RING,8)
+         else:
+@@ -213,10 +228,15 @@
+             u=polyvec_t(RING, 8, [AM_pub * m_pub])
+ 
+         # verify proof for PoK(w): Aw + u = 0
+-        A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++        pub_key = tuple(pub_mvec)
++        if self._p2_cached_pub_key != pub_key:
++            AM_priv=AM.zero_out_cols(pub_mvec)
++            A = polymat_t(RING, 8, 48, [AR, ATAU, -B1, -self.B2, AM_priv])
++            self.p2_verifier.set_statement_A(A)
++            self._p2_cached_pub_key = pub_key
+         proof = sig
+         
+-        self.p2_verifier.set_statement(A, u)
++        self.p2_verifier.set_statement_t(u)
+         try:
+             self.p2_verifier.verify(proof, strict=strict)
+         except VerificationError:

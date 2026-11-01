@@ -1,0 +1,13 @@
+{
+  "compiler": "gcc",
+  "variant": "ARGO_NATIVE",
+  "flint_mode": "BUNDLED_FLINT",
+  "files": {
+    "argo_worker": "30d591f33829cf45bc78f08d2b7a422e0b039fa01e2d0675c61b826abbb756f7",
+    "argo_worker.c": "6f429309a7ddbb54d8a194e24c4677ec1b878de3d3937a599c8ec03cebe15411",
+    "argo_wire.h": "d583deaacea1c8b341338dd5439802de53714dead16143a2f26cda074f1ef30a",
+    "argo_public.h": "00fb0a9998faddc1387c4ddb28c50b32096762c2e9cbbe530fbfab980f878cbb",
+    "code/include/params.h": "8389d3b41ae91459151ce418bdaeb9951c9e43ff173ea927886892547e07f56f"
+  },
+  "flint_library_sha256": "5c6d3956cf24d60f67eabf5dfb53354d802742e302b62d97b5ebc5a6a5472b11"
+}

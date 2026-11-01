@@ -1,0 +1,36 @@
+{
+  "lazer": {
+    "repository": "https://github.com/lazer-crypto/lazer",
+    "commit": "10eafeca4cd53ff4fc54193dce904dbd0026fefd",
+    "paper": "https://eprint.iacr.org/2024/1846",
+    "demo": "python/anon_cred/anon_cred.py",
+    "tracked_sources_modified": true
+  },
+  "labrador": {
+    "repository": "https://github.com/lattice-dogs/labrador",
+    "commit": "8b6626b26afd4c0162ddd089759d21d3d51bfbdf",
+    "built_for_this_demo": false
+  },
+  "cpu_features": {
+    "repository": "https://github.com/google/cpu_features",
+    "commit": "32b49eb5e7809052a28422cfde2f2745fbb0eb76",
+    "reason": "Exact revision requested by shipped HEXL CMake configuration"
+  },
+  "added_files": "Measurement adapters, metric export, fixed generic security model audit and freeze acceptance. Three tracked C files plus Falcon dependency sign.c carry counters; see PATCHES.json. Official Python protocol and parameter files are byte-identical.",
+  "benchmark_scope": "Official anonymous credential demo: blind issuance and selective disclosure, two workload lifecycles; seven performance and six scoped security evidence categories.",
+  "experiment_package_version": "LAZER-ORIGINAL-METRICS-1.0-20261014",
+  "documented_extensions": [
+    "measurement counters only; no acceptance/randomness/Fiat-Shamir changes"
+  ],
+  "official_parameters_changed": false,
+  "optional_estimator": {
+    "repo": "https://github.com/malb/lattice-estimator",
+    "commit": "53da5982597709ba0fdf94ea37a84d822310fd84",
+    "archive_sha256": "2eab9789311560c367b5021b47a421fb158df6a6ece01f700b471c2d014bd132",
+    "downloaded_for": "optional Sage attack scan; native audit uses separately labeled model estimates"
+  },
+  "protocol_modified": false,
+  "session_binding_added": false,
+  "extra_verifier_checks_added": false,
+  "display_name": "lazer基线-指标版"
+}

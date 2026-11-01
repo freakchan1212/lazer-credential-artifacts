@@ -1,0 +1,126 @@
+--- V3/lazer/src/rejection.c
++++ V4/lazer/src/rejection.c
+@@ -1,6 +1,30 @@
+ #include "lazer.h"
+ 
++#include <math.h>
+ #include <mpfr.h>
++
++/* Direction 8 (V4): Lazy floating-point pre-filter (cf. Ducas & Nguyen, ASIACRYPT 2012, Alg. 5)
++ * adapted to LNP22/LaZer rej_standard and rej_bimodal.
++ * Converts multi-limb integer x (nlimbs <= 6) into IEEE-754 binary64 (53-bit significand, u = 2^-53)
++ * with relative conversion error <= 6 * u < 6.67e-16.
++ * Under the explicitly enforced runtime domain check |arg| <= 32 andnlimbs <= 6,
++ * allowing up to 4 ULP for glibc libm exp/cosh, the total relative error is bounded by:
++ *   delta_max <= (32 * 14 + 12) * 2^-53 < 5.2e-14 << gamma = 1e-11 (> 190x safety margin).
++ * Any sample inside [1 - 1e-11, 1 + 1e-11] or outside |arg| <= 32 falls back to 128-bit MPFR.
++ */
++static inline double
++_int_to_double_hi53 (const int_t x)
++{
++  double acc = 0.0;
++  double base = 1.0;
++  unsigned int i;
++  for (i = 0; i < x->nlimbs; i++)
++    {
++      acc += (double)(x->limbs[i]) * base;
++      base *= 18446744073709551616.0; /* 2^64 */
++    }
++  return x->neg ? -acc : acc;
++}
+ 
+ /* bits of M * 2^128. assume M < 2^6*/
+ #define NBITS_M (128 + 6)
+@@ -88,8 +112,6 @@
+   ASSERT_ERR (mu->nlimbs * NBITS_LIMB >= 128);
+   ASSERT_ERR (scM->nlimbs == CEIL (NBITS_M, NBITS_LIMB));
+ 
+-  mpfr_init2 (t3, 128);
+-
+   /* u <- {0, ..., 2^128 - 1} */
+   int_set_i64 (u, 0);
+   rng_urandom (state, (uint8_t *)u->limbs, 128 / 8);
+@@ -102,6 +124,34 @@
+   int_sub (t2, t2, t1);   /* <v,v> - 2*<z,v> */
+ 
+   int_lshift (sigma2dbl, sigma2, 1); /* 2*sigma^2 */
++
++  /* Direction 8 (V4): IEEE-754 double fast-path filter with explicit domain check & 1e-11 guard band */
++  if (t2->nlimbs <= 6 && sigma2dbl->nlimbs <= 6 && mu->nlimbs <= 6)
++    {
++      const double d_nom = _int_to_double_hi53 (t2);
++      const double d_den = _int_to_double_hi53 (sigma2dbl);
++      if (d_den > 0.0 && d_nom <= 0.0 && -d_nom <= 32.0 * d_den)
++        {
++          const double d_mu = ldexp (_int_to_double_hi53 (mu), -256);
++          const double d_rhs = exp (d_nom / d_den);
++          if (isfinite (d_rhs) && isfinite (d_mu))
++            {
++              if (d_mu > d_rhs * (1.0 + 1e-11))
++                {
++                  baseline_counts[8]++;
++                  return 1;
++                }
++              if (d_mu < d_rhs * (1.0 - 1e-11))
++                {
++                  baseline_counts[8]++;
++                  return 0;
++                }
++            }
++        }
++    }
++  baseline_counts[9]++;
++
++  mpfr_init2 (t3, 128);
+ 
+   _int2mpfr (nom, t2, 128);
+   _int2mpfr (denom, sigma2dbl, 128);
+@@ -162,10 +212,6 @@
+   ASSERT_ERR (z->nlimbs == v->nlimbs);
+   ASSERT_ERR (scM->nlimbs == CEIL (NBITS_M, NBITS_LIMB));
+ 
+-  mpfr_init2 (t3, 128);
+-  mpfr_init2 (t4, 128);
+-  mpfr_init2 (t6, 128);
+-
+   /* u <- {0, ..., 2^128 - 1} */
+   int_set_i64 (u, 0);
+   rng_urandom (state, (uint8_t *)u->limbs,
+@@ -180,6 +226,37 @@
+   int_lshift (sigma2dbl, sigma2, 1); /* 2*sigma^2 */
+   int_set (_sigma2, sigma2);
+ 
++  /* Direction 8 (V4): IEEE-754 double fast-path filter with explicit domain check & 1e-11 guard band */
++  if (t2->nlimbs <= 6 && t1->nlimbs <= 6 && _sigma2->nlimbs <= 6 && Mu->nlimbs <= 6)
++    {
++      const double d_t2 = _int_to_double_hi53 (t2);
++      const double d_t1 = fabs (_int_to_double_hi53 (t1));
++      const double d_sig2 = _int_to_double_hi53 (_sigma2);
++      if (d_sig2 > 0.0 && d_t2 <= 0.0 && -d_t2 <= 64.0 * d_sig2 && d_t1 <= 32.0 * d_sig2)
++        {
++          const double d_mu = ldexp (_int_to_double_hi53 (Mu), -256);
++          const double d_val = d_mu * exp (d_t2 / (2.0 * d_sig2)) * cosh (d_t1 / d_sig2);
++          if (isfinite (d_val))
++            {
++              if (d_val > 1.0 + 1e-11)
++                {
++                  baseline_counts[8]++;
++                  return 1;
++                }
++              if (d_val < 1.0 - 1e-11)
++                {
++                  baseline_counts[8]++;
++                  return 0;
++                }
++            }
++        }
++    }
++  baseline_counts[9]++;
++
++  mpfr_init2 (t3, 128);
++  mpfr_init2 (t4, 128);
++  mpfr_init2 (t6, 128);
++
+   _int2mpfr (nom, t2, 128);
+   _int2mpfr (denom, sigma2dbl, sigma2dbl->nlimbs * NBITS_LIMB);
+   mpfr_div (t3, nom, denom, MPFR_RNDN); /* (-<v,v>) / (2*sigma^2) */
